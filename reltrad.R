@@ -247,6 +247,7 @@ hindu$tradition <- c("Hindu")
 all <- rbind(evan, ml, cath, mormon, jewish, muslim, atheist, buddhist, hindu, bprot)
 
 all$candidate <- factor(all$candidate, levels=unique(all$candidate))
+all$tradition <- factor(all$tradition, levels = c("Evangelical", "Mainline", "Black Protestant", "Mormon", "Catholic", "Jewish", "Muslim", "Hindu", "Buddhist", "Atheist"))
 
 ggplot(all, aes(1, count)) + geom_col(aes(fill= fct_rev(candidate)), colour = "black") + coord_flip() + 
   theme(axis.title.y = element_blank()) + 
