@@ -86,6 +86,8 @@ g1 <- as.data.frame(g1)
 g1$pct <- c(86.6, 85.5, 83.4, 81.1, 76.5, 74.4, 72.9, 66.8, 58.1, 49.5)
 g1$trad <- factor(g1$trad, levels=unique(g1$trad))
 
+#write.csv(g1, "denom_trump.csv")
+
 ggplot(g1, aes(reorder(trad, pct), pct)) + geom_col() + theme(axis.text.x = element_text(angle = 90)) + coord_flip()
 
 ## Bar Chart Style
