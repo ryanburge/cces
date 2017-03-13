@@ -4,11 +4,11 @@ library(ggplot2)
 library(extrafont)
 library(weights)
 library(forcats)
+library(haven)
 
 
 
-
-cces16 <- read_dta("C:/Users/Ryan Burge/Desktop/cces.dta")
+cces <- read_dta("C:/Users/Ryan Burge/Desktop/cces.dta")
 
 cces$white <- Recode(cces$race, "1=1; else=0")
 
@@ -19,7 +19,7 @@ cces$black <- Recode(cces$race, "2=1; else=0")
 
 cces$vote16 <- cces$CC16_410a
 
-cces$vote16 <- as.numeric(cces$vote16)
+#cces$vote16 <- as.numeric(cces$vote16)
 
 cces$hiattend <- Recode(cces$pew_churatd, "1:3=1; else=0")
 
@@ -28,13 +28,12 @@ cces$repubid <-Recode(cces$pid3, "2=1; else=0")
 cces$repubid7 <-Recode(cces$pid7, "5:7=1; else=0")
 cces$bagain <- Recode(cces$pew_bornagain, "1=1; else=0")
 
-cces <- filter(cces, vote16 <=4)
+#cces <- filter(cces, vote16 <=4)
 
-cces$vote16<-Recode(cces$vote16,"1='Donald Trump';
-                    2='Hillary Clinton';
-                    3='Gary Johnson';
-                    4='Jill Stein'",
-                    as.factor=TRUE)
+#cces$vote16<-Recode(cces$vote16,"1='Donald Trump';
+                   # 2='Hillary Clinton';
+                 #   3='Gary Johnson';
+                  #  4='Jill Stein'")
 
 ## Evangelical
 
@@ -97,22 +96,17 @@ cces$atheist <- Recode(cces$religpew, "9:10=1; else=0")
 
 
 ## Evangelical
-evangelical <- filter(cces, evangelical == 1)
 wpct(evangelical$vote16, evangelical$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(62.8, 34.1, 3.4, .5 )
+count <- c(75.8, 18.8, 2.5, .5 )
 count <- as.numeric(count)
 evan <- cbind(candidate, count)
 evan <- as.data.frame(evan)
-evan$count <- c(62.8, 34.1, 3.4, .5)
+evan$count <- c(75.8, 18.8, 2.5, .5)
 evan$candidate <- factor(evan$candidate, levels=unique(evan$candidate))
 evan$tradition <- c("Evangelical")
 
-colors <- c("firebrick1","dodgerblue3", "goldenrod1", "forestgreen")
-ggplot(vote, aes(x= candidate, y = count)) + geom_col(fill = colors, colour = "black") + ggtitle("Vote Choice Among Evangelicals (w/Weights)") + xlab("Candidate") + ylab("Percent of Evangelicals") +
-  theme(text=element_text(size=18, family="KerkisSans")) +
-  theme(plot.title = element_text(hjust = 0.5))
 
 ## Black Protestant
 
@@ -120,11 +114,11 @@ bprot <- filter(cces, black ==1 & religpew ==1)
 wpct(bprot$vote16, bprot$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(8.6, 89.7, .8, .8 )
+count <- c(8.5, 88.1, .8, .8 )
 count <- as.numeric(count)
 bprot <- cbind(candidate, count)
 bprot <- as.data.frame(bprot)
-bprot$count <- c(8.6, 89.7, .8, .8)
+bprot$count <- c(8.5, 88.1, .8, .8 )
 bprot$candidate <- factor(bprot$candidate, levels=unique(bprot$candidate))
 bprot$tradition <- c("Black Protestant")
 
@@ -147,11 +141,11 @@ mainline <- filter(cces, mainline ==1)
 wpct(mainline$vote16, mainline$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(52, 44.2, 2.6, .5 )
+count <- c(51.5, 43.4, 2.6, .5 )
 count <- as.numeric(count)
 ml <- cbind(candidate, count)
 ml <- as.data.frame(ml)
-ml$count <- c(52, 44.2, 2.6, .5)
+ml$count <- c(51.5, 43.4, 2.6, .5)
 ml$candidate <- factor(ml$candidate, levels=unique(ml$candidate))
 ml$tradition <- c("Mainline")
 
@@ -160,11 +154,11 @@ jewish <- filter(cces, jewish ==1)
 wpct(jewish$vote16, jewish$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(27.2, 69.7, 2.7, .2 )
+count <- c(26.9, 68.8, 2.7, .2 )
 count <- as.numeric(count)
 jewish <- cbind(candidate, count)
 jewish <- as.data.frame(jewish)
-jewish$count <- c(27.2, 69.7, 2.7, .2   )
+jewish$count <- c(26.9, 68.8, 2.7, .2 )
 jewish$candidate <- factor(jewish$candidate, levels=unique(jewish$candidate))
 jewish$tradition <- c("Jewish")
 
@@ -174,11 +168,11 @@ catholic <- filter(cces, catholic ==1)
 wpct(catholic$vote16, catholic$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(50.1, 46.8, 2, .7 )
+count <- c(49.2, 46.0, 2.1, .7 )
 count <- as.numeric(count)
 catholic <- cbind(candidate, count)
 catholic <- as.data.frame(catholic)
-catholic$count <- c(50.1, 46.8, 2, .7 )
+catholic$count <- c(49.2, 46.0, 2.1, .7 )
 catholic$candidate <- factor(catholic$candidate, levels=unique(catholic$candidate))
 catholic$tradition <- c("Catholic")
 
@@ -187,11 +181,11 @@ muslim <- filter(cces, muslim ==1)
 wpct(muslim$vote16, muslim$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(14.3, 82.8, 0, 2.4 )
+count <- c(14.7, 81.7, 0.4, 2.4 )
 count <- as.numeric(count)
 muslim <- cbind(candidate, count)
 muslim <- as.data.frame(muslim)
-muslim$count <- c(14.3, 82.8, 0, 2.4 )
+muslim$count <- c(14.7, 81.7, 0.4, 2.4  )
 muslim$candidate <- factor(muslim$candidate, levels=unique(muslim$candidate))
 muslim$tradition <- c("Muslim")
 
@@ -200,11 +194,11 @@ atheist <- filter(cces, atheist ==1)
 wpct(atheist$vote16, atheist$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(18.6, 74.5, 7.4, 3.1 )
+count <- c(18.3, 73.3, 3.5, 3.1 )
 count <- as.numeric(count)
 atheist <- cbind(candidate, count)
 atheist <- as.data.frame(atheist)
-atheist$count <- c(17.6, 71, 6.7, 4.6 )
+atheist$count <- c(18.3, 73.3, 3.5, 3.1 )
 atheist$candidate <- factor(atheist$candidate, levels=unique(atheist$candidate))
 atheist$tradition <- c("Atheist")
 
@@ -213,11 +207,11 @@ buddhist <- filter(cces, buddhist ==1)
 wpct(buddhist$vote16, buddhist$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(18.5, 69.2, 2.7, 9.5 )
+count <- c(18, 67.2, 2.7, 9.3 )
 count <- as.numeric(count)
 buddhist <- cbind(candidate, count)
 buddhist <- as.data.frame(buddhist)
-buddhist$count <- c(18.5, 69.2, 2.7, 9.5  )
+buddhist$count <- c(18, 67.2, 2.7, 9.3  )
 buddhist$candidate <- factor(buddhist$candidate, levels=unique(buddhist$candidate))
 buddhist$tradition <- c("Buddhist")
 
@@ -226,11 +220,11 @@ hindu <- filter(cces, hindu ==1)
 wpct(hindu$vote16, hindu$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
-count <- c(24.3, 75.6, 0, 0 )
+count <- c(24.1, 74.8, 0, 0 )
 count <- as.numeric(count)
 hindu <- cbind(candidate, count)
 hindu <- as.data.frame(hindu)
-hindu$count <- c(24.3, 75.6, 0, 0 )
+hindu$count <- c(24.1, 74.8, 0, 0)
 hindu$candidate <- factor(hindu$candidate, levels=unique(hindu$candidate))
 hindu$tradition <- c("Hindu")
 
