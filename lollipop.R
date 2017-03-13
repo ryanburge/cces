@@ -6,6 +6,8 @@ cces16$white <- Recode(cces16$race, "1=1; else=0")
 
 cces16$black <- Recode(cces16$race, "2=1; else=0")
 
+cces16$age <- 2017 - cces16$birthyr
+
 ## Vote 2016 
 
 cces16$vote16 <- cces16$CC16_410a
@@ -50,7 +52,7 @@ advent <- filter(cces16, evanadvent ==1 & white ==1)
 evan16 <- filter(cces16, evanbaptist == 1 | evanmeth == 1 | evannd == 1 | evanluth == 1 | evanpres == 1 | pente == 1 | evanchrist == 1 | evancong == 1 | evanholy == 1 | evanadvent ==1)
 evan16 <- filter(evan16, white ==1)
 #evan16 <- filter(evan16, black !=1)
-evan16 <- filter(evan16, white ==1 & hiattend ==1)
+#evan16 <- filter(evan16, white ==1 & hiattend ==1)
 
 
 
@@ -71,16 +73,85 @@ trump <- filter(evan16, vote16 == 1)
 ntrump <- filter(evan16, vote16 != 1)
 
 wpct(trump$gender, trump$commonweight_post)
+## 49.3 Male 50.6 Female
 wpct(ntrump$gender, ntrump$commonweight_post)
+## 43.7% Male 56.2% Female
 
-wpct(trump$hiattend, trump$commonweight_post)
-wpct(ntrump$hiattend, ntrump$commonweight_post)
+gtrump <- data.frame("class" = c("Male", "Female"), pct =c(49.3, 50.6))
+gntrump <- data.frame("class" = c("Male", "Female"), pct =c(43.7, 56.2))
+
+gtrump$label <- c("Trump")
+gntrump$label <- c("Non-Trump")
+
+gender <- rbind(gtrump, gntrump)
+
+
+ggplot(gender, aes(x=class, y=pct)) + geom_col(aes(fill=label), position = "dodge") + scale_fill_manual(values = Palette) +  theme_minimal(base_family="Arial Narrow") + 
+  labs(x="Gender", y="Percentage of Respondents", title="Evangelical Voters", subtitle="", caption="Data from CCES 2016") + 
+  theme(legend.position="bottom") + labs(fill="")
+
+wpct(trump$pew_churatd, trump$commonweight_post)
+## 19.6% Week+  28.6% Weekly 9.2% Monthly 13.3% Yearly 21.2% Seldom 7% Never  
+wpct(ntrump$pew_churatd, ntrump$commonweight_post)
+## 11.4% Week+  22.4% Weekly 9.8% Monthly 15.5% Yearly 26.7% Seldom 13.2% Never
+
+tattend  <- data.frame("class" =c("Weekly+", "Weekly", "Monthly", "Yearly","Seldom", "Never"), pct = c(19.6,28.6,9.2,13.3,21.2,7))
+ntattend <- data.frame("class" =c("Weekly+", "Weekly", "Monthly", "Yearly","Seldom", "Never"), pct = c(11.4,22.4,9.8,15.5,26.7,13.2))
+tattend$class <- factor(tattend$class, levels=unique(tattend$class))
+ntattend$class <- factor(ntattend$class, levels=unique(ntattend$class))
+
+tattend$label <- c("Trump")
+ntattend$label <- c("Non-Trump")
+
+attend <- rbind(tattend, ntattend)
+
+Palette <- c("gray61", "red3")
+
+
+ggplot(attend, aes(x=class, y=pct)) + geom_col(aes(fill=label), position = "dodge") + scale_fill_manual(values = Palette) +  theme_minimal(base_family="Arial Narrow") + 
+  labs(x="Church Attendance", y="Percentage of Respondents", title="Evangelical Voters", subtitle="", caption="Data from CCES 2016") + 
+  theme(legend.position="bottom") + labs(fill="")
+
+
+
 
 wpct(trump$educ, trump$commonweight_post)
+## 8% Less than HS 34% HS Grad 24.8% Some College 11.5% 2 yr college 15.2% 4 yr college 6.4% Grad Degree
 wpct(ntrump$educ, ntrump$commonweight_post)
+## 5.1% Less than HS 25.7% HS Grad 23.9% Some College 10.6% 2 yr college 22.1% 4 yr college 12.5% Grad Degree
 
-wpct(trump$sbc, trump$commonweight_post)
-wpct(ntrump$sbc, ntrump$commonweight_post)
+
+teduc  <- data.frame("class" =c("Less than HS", "HS Grad", "Some College", "2 yr College","4 yr College", "Grad Degree"), pct = c(8,34,24.8,11.5,15.2,6.4))
+nteduc <- data.frame("class" =c("Less than HS", "HS Grad", "Some College", "2 yr College","4 yr College", "Grad Degree"), pct = c(5.1,25.7,23.9,10.6,22.1,12.5))
+teduc$class <- factor(teduc$class, levels=unique(teduc$class))
+nteduc$class <- factor(nteduc$class, levels=unique(nteduc$class))
+teduc$label <- c("Trump")
+nteduc$label <- c("Non-Trump")
+
+educ <- rbind(teduc, nteduc)
+
+ggplot(educ, aes(x=class, y=pct)) + geom_col(aes(fill=label), position = "dodge") + scale_fill_manual(values = Palette) +  theme_minimal(base_family="Arial Narrow") + 
+  labs(x="Church Attendance", y="Percentage of Respondents", title="Evangelical Voters", subtitle="", caption="Data from CCES 2016") + 
+  theme(legend.position="bottom") + labs(fill="")
+
+
+
+
+
+
+
+age1 <- ggplot(trump, (aes(x=age))) + geom_bar(fill = "red3", colour = "black") + geom_vline(xintercept = 57.3, linetype =2) +  theme_minimal(base_family="Arial Narrow") + labs(x="Age", y="Number of Respondents", 
+                                                                                                 title="Evangelical Trump Voters",
+                                                                                                 subtitle="Mean = 57.3",
+                                                                                                 caption="Data from CCES 2016")
+
+age2 <- ggplot(ntrump, (aes(x=age))) + geom_bar(fill = "gray61", colour = "black") + geom_vline(xintercept = 52.5, linetype =2) +  theme_minimal(base_family="Arial Narrow") + labs(x="Age", y="Number of Respondents", 
+                                                                                                                                           title="Evangelical Non-Trump Voters",
+                                                                                                                                           subtitle="Mean = 52.5",
+                                                                                                                                           caption="Data from CCES 2016")
+
+       
+grid.arrange(age1, age2, ncol=1)
 
 
 trad <- c("Southern Baptist", "Free Methodist","Non-Denom", "Luth. - MO or WI Synod", "Evan. Presby.", "Pentecostal", "Church of Christ", "Cons. Congregat.", "Holiness", "Adventist")
