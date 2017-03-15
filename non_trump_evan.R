@@ -126,6 +126,8 @@ evan16 <- filter(evan16, white ==1)
 
 ## Trump Voting Evangelicals and Non Trump Evangelicals
 trump <- filter(evan16, vote16 == 1)
+clinton <- filter(evan16, CC16_410a == 2)
+
 ntrump <- filter(evan16, vote16 != 1)
 
 ## Comparing by Gender
@@ -181,34 +183,60 @@ wpct(trump$educ, trump$commonweight_post)
 wpct(ntrump$educ, ntrump$commonweight_post)
 ## 5.1% Less than HS 25.7% HS Grad 23.9% Some College 10.6% 2 yr college 22.1% 4 yr college 12.5% Grad Degree
 
+noths <- filter(cces, evangelical ==1 & educ ==1)
+hs <- filter(cces, evangelical ==1 & educ ==2)
+somecollege <- filter(cces, evangelical ==1 & educ ==3)
+aa <- filter(cces, evangelical ==1 & educ ==4)
+ba <- filter(cces, evangelical ==1 & educ ==5)
+grad <- filter(cces, evangelical ==1 & educ ==6)
 
-teduc  <- data.frame("class" =c("Less than HS", "HS Grad", "Some College", "2 yr College","4 yr College", "Grad Degree"), pct = c(8,34,24.8,11.5,15.2,6.4))
-nteduc <- data.frame("class" =c("Less than HS", "HS Grad", "Some College", "2 yr College","4 yr College", "Grad Degree"), pct = c(5.1,25.7,23.9,10.6,22.1,12.5))
-teduc$class <- factor(teduc$class, levels=unique(teduc$class))
-nteduc$class <- factor(nteduc$class, levels=unique(nteduc$class))
-teduc$label <- c("Trump")
-nteduc$label <- c("Non-Trump")
+wpct(noths$CC16_410a, noths$commonweight_post)
+wpct(hs$CC16_410a, hs$commonweight_post)
+wpct(somecollege$CC16_410a, somecollege$commonweight_post)
+wpct(aa$CC16_410a, aa$commonweight_post)
+wpct(ba$CC16_410a, ba$commonweight_post)
+wpct(grad$CC16_410a, grad$commonweight_post)
 
-educ <- rbind(teduc, nteduc)
 
-ggplot(educ, aes(x=class, y=pct)) + geom_col(aes(fill=label), position = "dodge") + scale_fill_manual(values = Palette) +  theme_minimal(base_family="Arial Narrow") + 
-  labs(x="Church Attendance", y="Percentage of Respondents", title="Evangelical Voters", subtitle="", caption="Data from CCES 2016") + 
+
+
+eductrump <- data.frame("class" =c("Less than HS", "HS Grad", "Some College", "2 yr College","4 yr College", "Grad Degree"), pct = c(61.9,64.2,61.4,62.1,59.1,52.7), label = c("Trump's Share"))
+educlinton <- data.frame("class" =c("Less than HS", "HS Grad", "Some College", "2 yr College","4 yr College", "Grad Degree"), pct = c(35.5,32.9,33.3,31,31.8,39.3), label = c("Clinton's Share"))
+
+eduvote <- rbind(eductrump, educlinton)
+
+
+
+eduvote$class <- factor(eduvote$class , levels=unique(eduvote$class ))
+
+ggplot(eduvote, aes(x=class, y=pct)) + geom_col(aes(fill=label), position = "dodge") + scale_fill_manual(values = Palette) +  theme_minimal(base_family="Arial Narrow") + 
+  labs(x="Highest Education Level", y="Percentage of Respondents", title="Evangelical Voters Education Level And Vote Share in the 2016 Presidential Election", subtitle="Among White Respondents", caption="Data from CCES 2016") + 
   theme(legend.position="bottom") + labs(fill="")
 
 
 
 ## Making the Age Chart
 
-age1 <- ggplot(trump, (aes(x=age))) + geom_bar(fill = "red3", colour = "black") + geom_vline(xintercept = 57.3, linetype =2) +  theme_minimal(base_family="Arial Narrow") + labs(x="Age", y="Number of Respondents", 
+age1 <- ggplot(trump, (aes(x=age))) + geom_bar(fill = "red3", colour = "black") + geom_vline(xintercept = 57.3, linetype =1, size =2) +  theme_minimal(base_family="Arial Narrow") + labs(x="Age", y="Number of Respondents", 
                                                                                                  title="Evangelical Trump Voters",
                                                                                                  subtitle="Mean = 57.3",
                                                                                                  caption="Data from CCES 2016")
 
-age2 <- ggplot(ntrump, (aes(x=age))) + geom_bar(fill = "gray61", colour = "black") + geom_vline(xintercept = 52.5, linetype =2) +  theme_minimal(base_family="Arial Narrow") + labs(x="Age", y="Number of Respondents", 
-                                                                                                                                           title="Evangelical Non-Trump Voters",
-                                                                                                                                           subtitle="Mean = 52.5",
+age2 <- ggplot(clinton, (aes(x=age))) + geom_bar(fill = "dodgerblue3", colour = "black") + geom_vline(xintercept = 54.4, linetype =1, size =2) +  theme_minimal(base_family="Arial Narrow") + labs(x="Age", y="Number of Respondents", 
+                                                                                                                                           title="Evangelical Clinton Voters",
+                                                                                                                                           subtitle="Mean = 54.4",
                                                                                                                                            caption="Data from CCES 2016")
 grid.arrange(age1, age2, ncol=1)
 
                                                                                                                                                                         
+attendtrump  <- data.frame("class" =c("Weekly+", "Weekly", "Monthly", "Yearly","Seldom", "Never"), pct = c(67.5,64.2,57.8,58.8,58.9,53.3), label = c("Trump's Share"))
+attendhrc <- data.frame("class" =c("Weekly+", "Weekly", "Monthly", "Yearly","Seldom", "Never"), pct = c(26.4,30,36,37.4,36.2,41.9), label = c("Clinton's Share"))
+attendvote <- rbind(attendtrump, attendhrc)
 
+attendvote$class <- factor(attendvote$class , levels=unique(attendvote$class ))
+
+Palette <- c("red3", "dodgerblue3")
+
+ggplot(attendvote, aes(x=class, y=pct)) + geom_col(aes(fill=label), position = "dodge") + scale_fill_manual(values = Palette) +  theme_minimal(base_family="Arial Narrow") + 
+  labs(x="Church Attendance", y="Percentage of Respondents", title="Evangelical Voters Church Attendance and Vote Share in the 2016 Presidential Election", subtitle="Among White Respondents", caption="Data from CCES 2016") + 
+  theme(legend.position="bottom") + labs(fill="")
