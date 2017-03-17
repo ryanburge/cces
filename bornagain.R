@@ -9,10 +9,29 @@ library(weights)
 
 cces <- read.csv("cces.csv")
 
+cces$repubid <- Recode(cces$pid7, "8=4")
+
 cces$bagain <- Recode(cces$pew_bornagain, "1=1; else=0")
+
+cces$evanbaptist <- Recode(cces$religpew_baptist, "1=1; 5:90=1; else=0")
+cces$evanmeth <- Recode(cces$religpew_methodist, "2=1; else=0")
+cces$evannd <- Recode(cces$religpew_nondenom, "1:90=1; else=0")
+cces$evanluth <- Recode(cces$religpew_lutheran, "2:3=1; else=0")
+cces$evanpres <- Recode(cces$religpew_presby, "6=1; else=0")
+cces$pente <- Recode(cces$religpew_pentecost, "1:90=1; else=0")
+cces$evanchrist <- Recode(cces$religpew_christian, "1=1; 3:4=1; else=0")
+cces$evancong <- Recode(cces$religpew_congreg, "2=1; else=0")
+cces$evanholy <- Recode(cces$religpew_holiness, "1:90=1; else=0")
+cces$evanadvent <- Recode(cces$religpew_advent, "1:90=1; else=0")
+
+evangelical <- filter(cces, evanbaptist == 1 | evanmeth == 1 | evannd == 1 | evanluth == 1 | evanpres == 1 | pente == 1 | evanchrist == 1 | evancong == 1 | evanholy == 1 | evanadvent ==1)
+evangelical <- filter(evangelical, white ==1)
 
 
 bagain <- filter(cces, bagain ==1)
+whtba <- filter(bagain, white ==1)
+
+
 ## 28.2% of the total sample indicate born again
 
 baprot <- filter(cces, bagain ==1 & religpew == 1)
