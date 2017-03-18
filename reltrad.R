@@ -27,6 +27,7 @@ cces$repubid <-Recode(cces$pid3, "2=1; else=0")
 
 cces$repubid7 <-Recode(cces$pid7, "5:7=1; else=0")
 cces$bagain <- Recode(cces$pew_bornagain, "1=1; else=0")
+cces$newpid <- Recode(cces$pid7, "8=4")
 
 #cces <- filter(cces, vote16 <=4)
 
@@ -68,6 +69,9 @@ cces$mlreform <- Recode(cces$religpew_reformed, "1:90=1; else=0")
 cces$episp <- Recode(cces$religpew_episcop, "1:90=1; else=0")
 
 cces$mainline <- cces$mlbaptist + cces$mlmeth + cces$mlluth + cces$mlpres + cces$mlchrist + cces$mlcong + cces$mlreform + cces$episp
+cces$mainline <- Recode(cces$mainline, "1:4=1; else=0")
+
+
 
 ## Black Protestant
 
@@ -91,8 +95,11 @@ cces$buddhist <- Recode(cces$religpew, "7=1; else=0")
 ## Hindus
 cces$hindu <- Recode(cces$religpew, "8=1; else=0")
 
-## No Religion 
-cces$atheist <- Recode(cces$religpew, "9:10=1; else=0")
+## Atheist
+cces$atheist <- Recode(cces$religpew, "9=1; else=0")
+
+## Agnostic 
+cces$agnostic <- Recode(cces$religpew, "10=1; else=0")
 
 
 ## Evangelical
