@@ -73,36 +73,46 @@ cces$episp <- Recode(cces$religpew_episcop, "1:90=1; else=0")
 
 cces$mainline <- cces$mlbaptist + cces$mlmeth + cces$mlluth + cces$mlpres + cces$mlchrist + cces$mlcong + cces$mlreform + cces$episp
 cces$mainline <- Recode(cces$mainline, "1:4=1; else=0")
+#cces$mainline <- Recode(cces$mainline, "1:4=2; else=0")
 
 
 ## Black Protestant
 
 bprot <- filter(cces, black ==1 & religpew ==1)
+#cces$protestant <- Recode(cces$religpew, "1=1; else=0")
+#cces$bprot <- cces$black + cces$protesant
+#cces$bprot <- Recode(cces$bprot, "2=3; else=0")
 
 ## Catholic 
 cces$catholic <- Recode(cces$religpew_catholic, "1:90=1; else=0")
+##cces$catholic <- Recode(cces$catholic, "1=4; else=0")
 
 ## Mormon
 cces$mormon <- Recode(cces$religpew_mormon, "1:90=1; else=0")
+##cces$mormon <- Recode(cces$mormon, "1=5; else=0)
 
 ## Jewish
 cces$jewish <- Recode(cces$religpew, "5=1; else=0")
+##cces$jewish <- Recode(cces$jewish, "1=6; else=0")
 
 ## Muslim 
 cces$muslim <- Recode(cces$religpew, "6=1; else=0")
+##cces$muslim <- Recode(cces$muslim, "1=7; else=0")
 
 ## Buddhist
 cces$buddhist <- Recode(cces$religpew, "7=1; else=0")
+##cces$buddhist <- Recode(cces$buddhist, "1=8; else=0")
 
 ## Hindus
 cces$hindu <- Recode(cces$religpew, "8=1; else=0")
+##cces$hindu <- Recode(cces$hindu, "1=9; else=0")
 
 ## Atheist
 cces$atheist <- Recode(cces$religpew, "9=1; else=0")
-
+##cces$atheist <- Recode(cces$atheist, "1=10; else=0")
 ## Agnostic 
 cces$agnostic <- Recode(cces$religpew, "10=1; else=0")
-
+## cces$agnostic <- Recode(cces$agnostic, "1=11; else=0")
 
 mainline <- filter(cces, mainline ==1)
 bprot <- filter(cces, black ==1 & religpew ==1)
@@ -152,7 +162,7 @@ pid <- mutate(pid, class=factor(class, levels=rev(class)))
 ggplot(pid, aes(x = pid7, y = variable))  +
   geom_point(color = "black", shape=21, size =4, aes(fill = factor(class))) +  theme(legend.title=element_blank()) +
   theme(legend.position = "bottom") +xlab("Generally speaking, do you think of yourself as a ...?") + ylab("") + xlim(1,7.5)  +
-  scale_x_continuous(breaks = c(1,2,3,4,5, 6, 7), labels = c("Strong Dem.", "Not Strong Dem.", "Lean Dem.", "Neither", "Lean Rep.", "Not Strong Rep.", "Strong Rep.")) + 
+  scale_x_continuous(limits = c(1,7), breaks = c(1,2,3,4,5, 6, 7), labels = c("Strong Dem.", "Not Strong Dem.", "Lean Dem.", "Neither", "Lean Rep.", "Not Strong Rep.", "Strong Rep.")) + 
   theme(text=element_text(size=18, family="KerkisSans")) +  
   scale_fill_manual(values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6"))
 
@@ -191,8 +201,8 @@ ideo <- mutate(ideo, class=factor(class, levels=rev(class)))
 
 ggplot(ideo, aes(x = ideo5, y = variable))  +
   geom_point(color = "black", shape=21, size =4, aes(fill = factor(class))) +  theme(legend.title=element_blank()) +
-  theme(legend.position = "bottom") +xlab("Generally speaking, do you think of yourself as a ...?") + ylab("") + xlim(1,7.5)  +
-  scale_x_continuous(breaks = c(1,2,3,4,5), labels = c("Very liberal", "Liberal", "Moderate", "Conservative", "Very Conservative")) + 
-  theme(text=element_text(size=18, family="KerkisSans")) +  
+  theme(legend.position = "bottom") +xlab("Generally speaking, do you think of yourself as a ...?") + ylab("")  +
+  scale_x_continuous(limits =c(1.5,4.5), breaks = c(1,2,3,4,5), labels = c("Very liberal", "Liberal", "Moderate", "Conservative", "Very Conservative")) + 
+  theme(text=element_text(size=18, family="KerkisSans")) +
   scale_fill_manual(values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6"))
 
