@@ -61,43 +61,47 @@ cces$episp <- Recode(cces$religpew_episcop, "1:90=1; else=0")
 
 cces$mainline <- cces$mlbaptist + cces$mlmeth + cces$mlluth + cces$mlpres + cces$mlchrist + cces$mlcong + cces$mlreform + cces$episp
 cces$mainline <- Recode(cces$mainline, "1:4=1; else=0")
-#cces$mainline <- Recode(cces$mainline, "1:4=2; else=0")
+cces$mainline <- Recode(cces$mainline, "1:4=2; else=0")
 
 
 ## Black Protestant
 
 bprot <- filter(cces, black ==1 & religpew ==1)
-#cces$protestant <- Recode(cces$religpew, "1=1; else=0")
-#cces$bprot <- cces$black + cces$protesant
-#cces$bprot <- Recode(cces$bprot, "2=3; else=0")
+cces$protestant <- Recode(cces$religpew, "1=1; else=0")
+cces$bprot <- cces$black + cces$protesant
+cces$bprot <- Recode(cces$bprot, "2=3; else=0")
 
 ## Catholic 
 cces$catholic <- Recode(cces$religpew_catholic, "1:90=1; else=0")
-##cces$catholic <- Recode(cces$catholic, "1=4; else=0")
+cces$catholic <- Recode(cces$catholic, "1=4; else=0")
 
 ## Mormon
 cces$mormon <- Recode(cces$religpew_mormon, "1:90=1; else=0")
-##cces$mormon <- Recode(cces$mormon, "1=5; else=0)
+cces$mormon <- Recode(cces$mormon, "1=5; else=0")
 
 ## Jewish
 cces$jewish <- Recode(cces$religpew, "5=1; else=0")
-##cces$jewish <- Recode(cces$jewish, "1=6; else=0")
+cces$jewish <- Recode(cces$jewish, "1=6; else=0")
 
 ## Muslim 
 cces$muslim <- Recode(cces$religpew, "6=1; else=0")
-##cces$muslim <- Recode(cces$muslim, "1=7; else=0")
+cces$muslim <- Recode(cces$muslim, "1=7; else=0")
 
 ## Buddhist
 cces$buddhist <- Recode(cces$religpew, "7=1; else=0")
-##cces$buddhist <- Recode(cces$buddhist, "1=8; else=0")
+cces$buddhist <- Recode(cces$buddhist, "1=8; else=0")
 
 ## Hindus
 cces$hindu <- Recode(cces$religpew, "8=1; else=0")
-##cces$hindu <- Recode(cces$hindu, "1=9; else=0")
+cces$hindu <- Recode(cces$hindu, "1=9; else=0")
 
 ## Atheist
 cces$atheist <- Recode(cces$religpew, "9=1; else=0")
-##cces$atheist <- Recode(cces$atheist, "1=10; else=0")
+cces$atheist <- Recode(cces$atheist, "1=10; else=0")
+
 ## Agnostic 
 cces$agnostic <- Recode(cces$religpew, "10=1; else=0")
-## cces$agnostic <- Recode(cces$agnostic, "1=11; else=0")
+cces$agnostic <- Recode(cces$agnostic, "1=11; else=0")
+
+
+cces$reltrad <- cces$evangelical + cces$mainline + cces$bprot + cces$catholic + cces$mormon + cces$jewish + cces$muslim + cces$buddhist + cces$hindu + cces$atheist + cces$agnostic
