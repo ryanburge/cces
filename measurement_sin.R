@@ -44,3 +44,11 @@ p1 <- ggplot(ml, aes(x=reorder(denom,pct), y=pct)) + geom_bar(fill = "#1A476F", 
                                                    title="Are Mainliners Born Again? ",
                                                    subtitle="",
                                                    caption="Data from CCES 2016") + annotate("text", x = .75, y = 60, label = "religioninpublic.blog")
+
+
+Sys.setenv("plotly_username"="ryanburge")
+Sys.setenv("plotly_api_key"="bvzv16do7x")
+plotly_POST(p1, filename = "test")
+
+
+
