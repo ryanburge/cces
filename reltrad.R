@@ -31,10 +31,14 @@ cces$newpid <- Recode(cces$pid7, "8=4")
 
 #cces <- filter(cces, vote16 <=4)
 
-#cces$vote16<-Recode(cces$vote16,"1='Donald Trump';
-                   # 2='Hillary Clinton';
-                 #   3='Gary Johnson';
-                  #  4='Jill Stein'")
+cces$vote16<-Recode(cces$vote16,"1='Donald Trump';
+                    2='Hillary Clinton';
+                    3='Gary Johnson';
+                    4='Jill Stein';
+                    5= 'Other';
+                    6= 'Not Vote';
+                    7= 'Not Sure';
+                    8= 'Evan McMullin'; else = NA")
 
 ## Evangelical
 
@@ -56,6 +60,7 @@ attendevan <- filter(evangelical, hiattend ==1)
 
 cces$evangelical <- cces$evanbaptist + cces$evanmeth + cces$evannd + cces$evanluth + cces$evanpres + cces$pente + cces$evanchrist + cces$evancong + cces$evanholy + cces$evanadvent
 cces$evangelical <- Recode(cces$evangelical, "1:4=1; else=0")
+
 
 ## Mainline
 
@@ -299,3 +304,6 @@ ggplot(non, aes(1, count)) + geom_col(aes(fill= fct_rev(candidate)), colour = "b
   guides(fill = guide_legend(reverse = TRUE)) + labs(fill="") + facet_grid(tradition ~ .)   
 
 
+cces %>%  filter(evangelical ==1 & white ==1 & complete.cases(vote16)) %>% 
+  count(vote16, wt = commonweight_post) %>% 
+  mutate(weight = prop.table(n), trad = c("White Evangelical")) %>% arrange(desc(weight))
