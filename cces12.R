@@ -1,5 +1,5 @@
 
-cces12 <- read_dta("C:/Users/Ryan Burge/Desktop/cces12.dta")
+cces12 <- read_dta("D://cces/data/cces12.dta")
 
 cces12$white <- Recode(cces12$race, "1=1; else=0")
 cces12$black <- Recode(cces12$race, "2=1; else=0")
@@ -22,6 +22,13 @@ cces12$evanchrist <- Recode(cces12$religpew_christian, "1=1; 3:4=1; else=0")
 cces12$evancong <- Recode(cces12$religpew_congreg, "2=1; else=0")
 cces12$evanholy <- Recode(cces12$religpew_holiness, "1:90=1; else=0")
 cces12$evanadvent <- Recode(cces12$religpew_advent, "1:90=1; else=0")
+
+
+cces12$evangelical <- cces12$evanbaptist + cces12$evanmeth + cces12$evannd + cces12$evanluth + cces12$evanpres + cces12$pente + cces12$evanchrist + cces12$evancong + cces12$evanholy + cces12$evanadvent
+cces12$evangelical <- Recode(cces12$evangelical, "1:4=1; else=0")
+
+cces12$bagain <- Recode(cces12$pew_bornagain, "1=1; else=0")
+cces12$protestant <- Recode(cces12$religpew, "1=1; else=0")
 
 evan12 <- filter(cces12, evanbaptist == 1 | evanmeth == 1 | evannd == 1 | evanluth == 1 | evanpres == 1 | pente == 1 | evanchrist == 1 | evancong == 1 | evanholy == 1 | evanadvent ==1)
 evan12 <- filter(evan12, white ==1)
