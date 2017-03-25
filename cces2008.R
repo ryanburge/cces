@@ -30,6 +30,8 @@ attendevan <- filter(evangelical, hiattend ==1)
 cces2008$evangelical <- cces2008$evanbaptist + cces2008$evanmeth + cces2008$evannd + cces2008$evanluth + cces2008$evanpres + cces2008$pente + cces2008$evanchrist + cces2008$evancong + cces2008$evanholy + cces2008$evanadvent + cces2008$evanreform
 cces2008$evangelical <- Recode(cces2008$evangelical, "1:4=1; else=0")
 
+cces2008$protestant <- Recode(cces$V219, "1=1;else=0")
+
 wpct(evan08$vote08, evan08$V201)
 ## 75.7%  22.7%
 
