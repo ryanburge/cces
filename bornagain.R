@@ -119,9 +119,127 @@ pidbaprot16 <- cces16 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & comp
   count(pid7, wt = commonweight_post) %>% 
   mutate(weight = prop.table(n), type = c("White BA + Prot"), year = c("2016")) %>% arrange(desc(weight))
 
+pidevan12 <- cces12 %>%  filter(evangelical ==1 & white ==1 & complete.cases(pid7)) %>% 
+  count(pid7, wt = weight_vv_post) %>% 
+  mutate(weight = prop.table(n), type = c("White Evangelical"), year = c("2012")) %>% arrange(desc(weight))
 
-pidplot <- rbind(pidevan16, pidbaprot16)
+pidbaprot12 <- cces12 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & complete.cases(pid7)) %>% 
+  count(pid7, wt = weight_vv_post) %>% 
+  mutate(weight = prop.table(n), type = c("White BA + Prot"), year = c("2012")) %>% arrange(desc(weight))
 
+cces2008$pid7 <- cces2008$CC424 
+
+pidevan08 <- cces2008 %>%  filter(evangelical ==1 & V211 ==1 & complete.cases(pid7)) %>% 
+  count(pid7, wt = V201) %>% 
+  mutate(weight = prop.table(n), type = c("White Evangelical"), year = c("2008")) %>% arrange(desc(weight))
+
+pidbaprot08 <- cces2008 %>%  filter(V215 ==1 & V211 ==1 & V219 ==1 & complete.cases(pid7)) %>% 
+  count(pid7, wt = V201) %>% 
+  mutate(weight = prop.table(n), type = c("White BA + Prot"), year = c("2008")) %>% arrange(desc(weight))
+
+
+pidplot <- rbind(pidevan16, pidbaprot16, pidevan12, pidbaprot12, pidevan08, pidbaprot08)
+
+
+ggplot(pidplot %>% filter(pid7 <= 7 ), aes(x=pid7, y=weight*100, fill = type)) + geom_col(position = "dodge") +  
+  theme(axis.ticks = element_blank())  + 
+  theme(legend.position="bottom") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=18, family="KerkisSans")) + 
+  scale_fill_manual(values=c("chartreuse4","darkorange1", "dodgerblue3" )) +  
+  guides(fill = guide_legend(reverse = FALSE)) + labs(fill="")  +
+  scale_x_continuous(limits = c(.5,7.5), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Dem.", "Dem.", "Lean Dem.", "Independent", "Lean Rep.", "Rep.", "Strong. Rep"))+ labs(x="", y="Percent of Respondents", 
+                                                                                                                                                                              title="Different Measures of Evangelicalism? ",
+                                                                                                                                                                             caption="Data from CCES") + facet_grid(year ~ .) 
+
+                                                                                                                                                                             
+                                                                                                                                                                           
+                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                                                                                           
+
+### Checking the Mean PID difference in the two approaches in the CCES and the GSS
+
+cces2008$pid7[cces2008$pid7==8] <- NA
+cces12$pid7[cces12$pid7==8] <- NA
+cces16$pid7[cces16$pid7==8] <- NA
+
+
+mean1 <- cces2008 %>%  filter(V215 ==1 & V211 ==1 & V219 ==1 & complete.cases(pid7)) %>% 
+  summarise(mean = mean(pid7)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("2008")) 
+
+
+mean2 <-  cces12 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & complete.cases(pid7)) %>% 
+   summarise(mean = mean(pid7)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("2012")) 
+ 
+mean3 <- cces16 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & complete.cases(pid7)) %>% 
+   summarise(mean = mean(pid7)) %>% 
+   mutate(type = c("White BA + Prot"), year = c("2016")) 
+ 
+meanba <- rbind(mean1, mean2, mean3)
+mean(meanba$mean)
+#5.20
+ 
+mean4 <-  cces2008 %>%  filter(evangelical ==1 & V211 ==1 & complete.cases(pid7)) %>% 
+   summarise(mean = mean(pid7)) %>% 
+   mutate(type = c("White Evangelical"), year = c("2008")) 
+
+mean5 <-  cces12 %>%  filter(evangelical ==1 & white ==1 & complete.cases(pid7)) %>% 
+   summarise(mean = mean(pid7)) %>% 
+  mutate(type = c("White Evangelical"), year = c("2012")) 
+ 
+mean6 <-  cces16 %>%  filter(evangelical ==1 & white ==1 & complete.cases(pid7)) %>% 
+   summarise(mean = mean(pid7)) %>% 
+   mutate(type = c("White Evangelical"), year = c("2016")) 
+
+meanevan <- rbind(mean4, mean5, mean6)
+mean(meanevan$mean) 
+#4.96
+mean(meanba$mean) - mean(meanevan$mean)
+## Difference in the CCES is .2462
+0.2462975/7
+## 0.03518536 is the difference between the two. 
+
+
+gssm1 <- gss10 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
+  summarise(mean = mean(partyid)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("2010")) 
+
+
+gssm2 <- gss10 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
+  summarise(mean = mean(partyid)) %>% 
+  mutate(type = c("White Evangelical"), year = c("2010")) 
+
+
+gssm3 <- gss12 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
+  summarise(mean = mean(partyid)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("2012")) 
+
+
+gssm4 <- gss12 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
+  summarise(mean = mean(partyid)) %>% 
+  mutate(type = c("White Evangelical"), year = c("2012")) 
+
+
+gssm5 <- gss14 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
+  summarise(mean = mean(partyid)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("2014")) 
+
+
+gssm6 <- gss14 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
+  summarise(mean = mean(partyid)) %>% 
+  mutate(type = c("White Evangelical"), year = c("2014")) 
+
+meangssba <- rbind(gssm1, gssm3, gssm5)
+mean(meangssba$mean)
+#3.746051
+meangssevan <- rbind(gssm2, gssm4, gssm6)
+mean(meangssevan$mean)
+#3.736456
+
+mean(meangssba$mean) - mean(meangssevan$mean)
+## 0.009594778
 
 ggplot(pidplot %>% filter(pid7 <= 7 ), aes(x=pid7, y=weight*100, fill = type)) + geom_col(position = "dodge") +  
   theme(axis.ticks = element_blank()) + ylab("Percent of Respondents") + 
@@ -167,22 +285,44 @@ ggplot(attplot, aes(x=attend, y=weight, fill = type)) + geom_col(position = "dod
 
 
 ################ GSS
+gss10 <- read_dta("D:/cces/data/gss10.dta")
+gss12 <- read_dta("D:/cces/data/gss12.dta")
+gss14 <- read_dta("D:/cces/data/gss14.dta")
 
-
-
-
-gss1 <- gss %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
+gss1 <- gss10 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
   count(partyid, wt = wtss) %>% 
-  mutate(weight = prop.table(n), type = c("White BA + Prot")) 
+  mutate(weight = prop.table(n), type = c("White BA + Prot"), year = c("2010")) 
 
 
-gss2 <- gss %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
+gss2 <- gss10 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
   count(partyid, wt = wtss) %>% 
-  mutate(weight = prop.table(n), type = c("White Evangelical")) 
+  mutate(weight = prop.table(n), type = c("White Evangelical"), year = c("2010")) 
 
 
-gsspid <- rbind(gss1, gss2)
+gss3 <- gss12 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
+  count(partyid, wt = wtss) %>% 
+  mutate(weight = prop.table(n), type = c("White BA + Prot"), year = c("2012")) 
 
+
+gss4 <- gss12 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
+  count(partyid, wt = wtss) %>% 
+  mutate(weight = prop.table(n), type = c("White Evangelical"), year = c("2012")) 
+
+
+gss5 <- gss14 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
+  count(partyid, wt = wtss) %>% 
+  mutate(weight = prop.table(n), type = c("White BA + Prot"), year = c("2014")) 
+
+
+gss6 <- gss14 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
+  count(partyid, wt = wtss) %>% 
+  mutate(weight = prop.table(n), type = c("White Evangelical"), year = c("2014")) 
+
+
+gsspid <- rbind(gss1, gss2, gss3, gss4, gss5, gss6)
+
+
+## Making the GSS Facet
 
 ggplot(gsspid %>% filter(partyid <= 6 ), aes(x=partyid, y=weight*100, fill = type)) + geom_col(position = "dodge") +  
   theme(axis.ticks = element_blank())  + 
@@ -193,11 +333,8 @@ ggplot(gsspid %>% filter(partyid <= 6 ), aes(x=partyid, y=weight*100, fill = typ
   guides(fill = guide_legend(reverse = FALSE)) + labs(fill="")  +
   scale_x_continuous(limits = c(-.5,6.5), breaks = c(0,1,2,3,4,5,6), labels = c("Strong Dem.", "Dem.", "Lean Dem.", "Independent", "Lean Rep.", "Rep.", "Strong. Rep"))+ labs(x="", y="Percent of Respondents", 
                                                                                                                                                                               title="Different Measures of Evangelicalism? ",
-                                                                                                                                                                              caption="Data from GSS 2012") 
-
-
-
-
+                                                                                                                                                                              caption="Data from GSS") + facet_grid(year ~ .)   
+                                                                                                                                                                              
 
 #bagain <- filter(cces, bagain ==1)
 #whtba <- filter(bagain, white ==1)
