@@ -135,6 +135,66 @@ ggplot(pidplot %>% filter(pid7 <= 7 ), aes(x=pid7, y=weight*100, fill = type)) +
 
 
 
+cces16$attend <- 7 - cces16$pew_churatd
+cces16$attend <- Recode(cces16$attend, "0= 'Do not Know';
+                        1= 'Never';
+                        2= 'Seldom';
+                        3= 'Yearly';
+                        4= 'Monthly';
+                        5= 'Weekly';
+                        6= 'More than Weekly'")
+
+
+evanatt <- cces16 %>%  filter(evangelical ==1 & white ==1 & complete.cases(attend)) %>% 
+  count(attend, wt = commonweight_post) %>% 
+  mutate(weight = prop.table(n), type = c("White Evangelical")) %>% mutate(weight = weight*100) 
+
+baprotatt <- cces16 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & complete.cases(attend)) %>% 
+  count(attend, wt = commonweight_post) %>% 
+  mutate(weight = prop.table(n), type = c("White BA + Prot")) %>% mutate(weight = weight*100) 
+
+attplot <- rbind(evanatt, baprotatt)
+
+ggplot(attplot, aes(x=attend, y=weight, fill = type)) + geom_col(position = "dodge") +  
+  theme(axis.ticks = element_blank()) + ylab("Percent of Respondents") + 
+  theme(legend.position="bottom") +
+  ggtitle("Different Measures of Evangelicalism?") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=18, family="KerkisSans")) + 
+  scale_fill_manual(values=c("chartreuse4","darkorange1", "dodgerblue3" )) +  
+  guides(fill = guide_legend(reverse = FALSE)) + labs(fill="")  + xlab("Church Attendance") +
+  scale_x_continuous(limits = c(.5,6.5), breaks = c(1,2,3,4,5,6), labels = c("Never", "Seldom", "Yearly", "Monthly", "Weekly", "Weekly+"))  
+
+
+################ GSS
+
+
+
+
+gss1 <- gss %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
+  count(partyid, wt = wtss) %>% 
+  mutate(weight = prop.table(n), type = c("White BA + Prot")) 
+
+
+gss2 <- gss %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
+  count(partyid, wt = wtss) %>% 
+  mutate(weight = prop.table(n), type = c("White Evangelical")) 
+
+
+gsspid <- rbind(gss1, gss2)
+
+
+ggplot(gsspid %>% filter(partyid <= 6 ), aes(x=partyid, y=weight*100, fill = type)) + geom_col(position = "dodge") +  
+  theme(axis.ticks = element_blank())  + 
+  theme(legend.position="bottom") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=18, family="KerkisSans")) + 
+  scale_fill_manual(values=c("chartreuse4","darkorange1", "dodgerblue3" )) +  
+  guides(fill = guide_legend(reverse = FALSE)) + labs(fill="")  +
+  scale_x_continuous(limits = c(-.5,6.5), breaks = c(0,1,2,3,4,5,6), labels = c("Strong Dem.", "Dem.", "Lean Dem.", "Independent", "Lean Rep.", "Rep.", "Strong. Rep"))+ labs(x="", y="Percent of Respondents", 
+                                                                                                                                                                              title="Different Measures of Evangelicalism? ",
+                                                                                                                                                                              caption="Data from GSS 2012") 
+
 
 
 
