@@ -272,6 +272,7 @@ ggplot(mean, aes(x = mean, y = year))  +
 
 
 cces16$attend <- 7 - cces16$pew_churatd
+
 cces16$attend <- Recode(cces16$attend, "0= 'Do not Know';
                         1= 'Never';
                         2= 'Seldom';
@@ -279,6 +280,26 @@ cces16$attend <- Recode(cces16$attend, "0= 'Do not Know';
                         4= 'Monthly';
                         5= 'Weekly';
                         6= 'More than Weekly'")
+
+cces12$attend <- 7 - cces12$pew_churatd
+
+cces12$attend <- Recode(cces12$attend, "0= 'Do not Know';
+                        1= 'Never';
+                        2= 'Seldom';
+                        3= 'Yearly';
+                        4= 'Monthly';
+                        5= 'Weekly';
+                        6= 'More than Weekly'")
+
+cces08$attend <- 7 - cces08$V217
+cces08$attend <- Recode(cces08$attend, "0= 'Do not Know';
+                        1= 'Never';
+                        2= 'Seldom';
+                        3= 'Yearly';
+                        4= 'Monthly';
+                        5= 'Weekly';
+                        6= 'More than Weekly'")
+
 
 
 evanatt <- cces16 %>%  filter(evangelical ==1 & white ==1 & complete.cases(attend)) %>% 
@@ -300,6 +321,97 @@ ggplot(attplot, aes(x=attend, y=weight, fill = type)) + geom_col(position = "dod
   scale_fill_manual(values=c("chartreuse4","darkorange1", "dodgerblue3" )) +  
   guides(fill = guide_legend(reverse = FALSE)) + labs(fill="")  + xlab("Church Attendance") +
   scale_x_continuous(limits = c(.5,6.5), breaks = c(1,2,3,4,5,6), labels = c("Never", "Seldom", "Yearly", "Monthly", "Weekly", "Weekly+"))  
+
+
+
+
+mean1 <- cces08 %>%  filter(V215 ==1 & V211 ==1 & V219 ==1 & complete.cases(attend)) %>% 
+  summarise(mean = mean(attend)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("CCES 2008")) 
+
+
+mean2 <-  cces12 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & complete.cases(attend)) %>% 
+  summarise(mean = mean(attend)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("CCES 2012")) 
+
+mean3 <- cces16 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & complete.cases(attend)) %>% 
+  summarise(mean = mean(attend)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("CCES 2016")) 
+
+meanba <- rbind(mean1, mean2, mean3)
+mean(meanba$mean)
+#5.20
+
+mean4 <-  cces08 %>%  filter(evangelical ==1 & V211 ==1 & complete.cases(attend)) %>% 
+  summarise(mean = mean(attend)) %>% 
+  mutate(type = c("White Evangelical"), year = c("CCES 2008")) 
+
+mean5 <-  cces12 %>%  filter(evangelical ==1 & white ==1 & complete.cases(attend)) %>% 
+  summarise(mean = mean(attend)) %>% 
+  mutate(type = c("White Evangelical"), year = c("CCES 2012")) 
+
+mean6 <-  cces16 %>%  filter(evangelical ==1 & white ==1 & complete.cases(attend)) %>% 
+  summarise(mean = mean(attend)) %>% 
+  mutate(type = c("White Evangelical"), year = c("CCES 2016")) 
+
+meanall <- rbind(mean4, mean5, mean6, mean1, mean2, mean3)
+
+gss10$att <- Recode(gss10$attend, "8=6; 6:7=5; 4:5=4; 3=3; 2=2; 1=1; 0=0")
+gss12$att <- Recode(gss12$attend, "8=6; 6:7=5; 4:5=4; 3=3; 2=2; 1=1; 0=0")
+gss14$att <- Recode(gss14$attend, "8=6; 6:7=5; 4:5=4; 3=3; 2=2; 1=1; 0=0")
+
+
+
+gssm1 <- gss10 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(att)) %>% 
+  summarise(mean = mean(att)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("GSS 2010")) 
+
+
+gssm2 <- gss10 %>%  filter(evangelical ==1 & race ==1 & complete.cases(att)) %>% 
+  summarise(mean = mean(att)) %>% 
+  mutate(type = c("White Evangelical"), year = c("GSS 2010")) 
+
+
+gssm3 <- gss12 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(att)) %>% 
+  summarise(mean = mean(att)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("GSS 2012")) 
+
+
+gssm4 <- gss12 %>%  filter(evangelical ==1 & race ==1 & complete.cases(att)) %>% 
+  summarise(mean = mean(att)) %>% 
+  mutate(type = c("White Evangelical"), year = c("GSS 2012")) 
+
+
+gssm5 <- gss14 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(att)) %>% 
+  summarise(mean = mean(att)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("GSS 2014")) 
+
+
+gssm6 <- gss14 %>%  filter(evangelical ==1 & race ==1 & complete.cases(att)) %>% 
+  summarise(mean = mean(att)) %>% 
+  mutate(type = c("White Evangelical"), year = c("GSS 2014")) 
+
+meanall2 <- rbind(gssm1, gssm3, gssm5,gssm2, gssm4, gssm6 )
+
+mean <- rbind(meanall, meanall2)
+
+
+## THIS IS THE FINAL DOT PLOT FOR THE DIFFERENCES
+ggplot(mean, aes(x = mean, y = year))  +
+  geom_point(shape=21, size =4, aes(fill = factor(type))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom")  + scale_fill_brewer(palette = "Set2") + 
+  ylab("Year And Survey") + xlab("Self Reported Church Attendance") +
+  ggtitle("Different Measures of Evangelicalism")+ 
+  labs(caption = "Note: All Differences Not Significant at the .05 level") +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans"))  +
+  scale_fill_manual(values=c("grey","black", "dodgerblue3" )) +
+  scale_x_continuous(limits = c(.5,6.5), breaks = c(1,2,3,4,5,6), labels = c("Never", "Seldom", "Yearly", "Monthly", "Weekly", "Weekly+"))
+
+
+
+
+
 
 
 ################ GSS
