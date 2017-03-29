@@ -18,7 +18,7 @@ cces$repubid <-Recode(cces$pid3, "2=1; else=0")
 
 cces16$repubid7 <-Recode(cces16$pid7, "5:7=1; else=0")
 cces16$bagain <- Recode(cces16$pew_bornagain, "1=1; else=0")
-bagain16 <- filter(cces16, bagain ==1)
+#bagain16 <- filter(cces16, bagain ==1)
 
 cces16$evanbaptist <- Recode(cces16$religpew_baptist, "1=1; 5:90=1; else=0")
 cces16$evanmeth <- Recode(cces16$religpew_methodist, "2=1; else=0")
