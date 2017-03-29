@@ -10,7 +10,7 @@ library(haven)
 
 cces16 <- read_dta("D://cces/data/cces.dta")
 
-cces2008 <- read_dta("D:/cces/data/cces2008.dta")
+cces08 <- read_dta("D:/cces/data/cces2008.dta")
 
 
 cces16$white <- Recode(cces16$race, "1=1; else=0")
@@ -166,16 +166,16 @@ cces16$pid7[cces16$pid7==8] <- NA
 
 mean1 <- cces2008 %>%  filter(V215 ==1 & V211 ==1 & V219 ==1 & complete.cases(pid7)) %>% 
   summarise(mean = mean(pid7)) %>% 
-  mutate(type = c("White BA + Prot"), year = c("2008")) 
+  mutate(type = c("White BA + Prot"), year = c("CCES 2008")) 
 
 
 mean2 <-  cces12 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & complete.cases(pid7)) %>% 
    summarise(mean = mean(pid7)) %>% 
-  mutate(type = c("White BA + Prot"), year = c("2012")) 
+  mutate(type = c("White BA + Prot"), year = c("CCES 2012")) 
  
 mean3 <- cces16 %>%  filter(bagain ==1 & white ==1 & protestant ==1 & complete.cases(pid7)) %>% 
    summarise(mean = mean(pid7)) %>% 
-   mutate(type = c("White BA + Prot"), year = c("2016")) 
+   mutate(type = c("White BA + Prot"), year = c("CCES 2016")) 
  
 meanba <- rbind(mean1, mean2, mean3)
 mean(meanba$mean)
@@ -183,17 +183,17 @@ mean(meanba$mean)
  
 mean4 <-  cces2008 %>%  filter(evangelical ==1 & V211 ==1 & complete.cases(pid7)) %>% 
    summarise(mean = mean(pid7)) %>% 
-   mutate(type = c("White Evangelical"), year = c("2008")) 
+   mutate(type = c("White Evangelical"), year = c("CCES 2008")) 
 
 mean5 <-  cces12 %>%  filter(evangelical ==1 & white ==1 & complete.cases(pid7)) %>% 
    summarise(mean = mean(pid7)) %>% 
-  mutate(type = c("White Evangelical"), year = c("2012")) 
+  mutate(type = c("White Evangelical"), year = c("CCES 2012")) 
  
 mean6 <-  cces16 %>%  filter(evangelical ==1 & white ==1 & complete.cases(pid7)) %>% 
    summarise(mean = mean(pid7)) %>% 
-   mutate(type = c("White Evangelical"), year = c("2016")) 
+   mutate(type = c("White Evangelical"), year = c("CCES 2016")) 
 
-meanevan <- rbind(mean4, mean5, mean6)
+meanall <- rbind(mean4, mean5, mean6, mean1, mean2, mean3)
 mean(meanevan$mean) 
 #4.96
 mean(meanba$mean) - mean(meanevan$mean)
@@ -204,32 +204,32 @@ mean(meanba$mean) - mean(meanevan$mean)
 
 gssm1 <- gss10 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
   summarise(mean = mean(partyid)) %>% 
-  mutate(type = c("White BA + Prot"), year = c("2010")) 
+  mutate(type = c("White BA + Prot"), year = c("GSS 2010")) 
 
 
 gssm2 <- gss10 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
   summarise(mean = mean(partyid)) %>% 
-  mutate(type = c("White Evangelical"), year = c("2010")) 
+  mutate(type = c("White Evangelical"), year = c("GSS 2010")) 
 
 
 gssm3 <- gss12 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
   summarise(mean = mean(partyid)) %>% 
-  mutate(type = c("White BA + Prot"), year = c("2012")) 
+  mutate(type = c("White BA + Prot"), year = c("GSS 2012")) 
 
 
 gssm4 <- gss12 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
   summarise(mean = mean(partyid)) %>% 
-  mutate(type = c("White Evangelical"), year = c("2012")) 
+  mutate(type = c("White Evangelical"), year = c("GSS 2012")) 
 
 
 gssm5 <- gss14 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
   summarise(mean = mean(partyid)) %>% 
-  mutate(type = c("White BA + Prot"), year = c("2014")) 
+  mutate(type = c("White BA + Prot"), year = c("GSS 2014")) 
 
 
 gssm6 <- gss14 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
   summarise(mean = mean(partyid)) %>% 
-  mutate(type = c("White Evangelical"), year = c("2014")) 
+  mutate(type = c("White Evangelical"), year = c("GSS 2014")) 
 
 meangssba <- rbind(gssm1, gssm3, gssm5)
 mean(meangssba$mean)
@@ -241,6 +241,10 @@ mean(meangssevan$mean)
 mean(meangssba$mean) - mean(meangssevan$mean)
 ## 0.009594778
 
+meanall2 <- rbind(gssm1, gssm3, gssm5,gssm2, gssm4, gssm6 )
+
+mean <- rbind(meanall, meanall2)
+
 ggplot(pidplot %>% filter(pid7 <= 7 ), aes(x=pid7, y=weight*100, fill = type)) + geom_col(position = "dodge") +  
   theme(axis.ticks = element_blank()) + ylab("Percent of Respondents") + 
   theme(legend.position="bottom") +
@@ -250,6 +254,20 @@ ggplot(pidplot %>% filter(pid7 <= 7 ), aes(x=pid7, y=weight*100, fill = type)) +
   scale_fill_manual(values=c("chartreuse4","darkorange1", "dodgerblue3" )) +  
   guides(fill = guide_legend(reverse = FALSE)) + labs(fill="")  + xlab("Self Identified Political Ideology")  +
   scale_x_continuous(limits = c(.5,7.5), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Dem.", "Dem.", "Lean Dem.", "Independent", "Lean Rep.", "Rep.", "Strong. Rep"))
+
+## THIS IS THE FINAL DOT PLOT FOR THE DIFFERENCES
+ggplot(mean, aes(x = mean, y = year))  +
+  geom_point(shape=21, size =4, aes(fill = factor(type))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom")  + scale_fill_brewer(palette = "Set2") + 
+  ylab("Year And Survey") + xlab("Self Identified Political Ideology") +
+  ggtitle("Different Measures of Evangelicalism")+ 
+  labs(caption = "Note: All Differences Not Significant at the .05 level") +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans"))  +
+  scale_fill_manual(values=c("grey","black", "dodgerblue3" )) +
+  scale_x_continuous(limits = c(.5,7.5), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Dem.", "Dem.", "Lean Dem.", "Independent", "Lean Rep.", "Rep.", "Strong. Rep"))
+
+
 
 
 
