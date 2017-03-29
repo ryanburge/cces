@@ -5,13 +5,13 @@ library(dotwhisker)
 library(broom)
 
 
-cces16 <- read_dta("C:/Users/rpburge/Dropbox/data/cces.dta")
-cces12 <- read_dta("C:/Users/rpburge/Dropbox/data/cces12.dta")
-cces08 <- read_dta("C:/Users/rpburge/Dropbox/data/cces2008.dta")
+cces16 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/cces.dta")
+cces12 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/cces12.dta")
+cces08 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/cces2008.dta")
 
-gss10 <- read_dta("C:/Users/rpburge/Dropbox/data/gss10.dta")
-gss12 <- read_dta("C:/Users/rpburge/Dropbox/data/gss12.dta")
-gss14 <- read_dta("C:/Users/rpburge/Dropbox/data/gss14.dta")
+gss10 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss10.dta")
+gss12 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss12.dta")
+gss14 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss14.dta")
 
 
 ##Getting an Evangelical Variable
@@ -151,9 +151,13 @@ dwplot(model16, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
-        legend.justification=c(0, -5.5), legend.position=c(0, 0),
+        legend.justification=c(-0.01, -5.7), legend.position=c(0, 0),
         legend.background = element_rect(colour="grey80"),
         legend.title.align = .5) +
+   scale_colour_grey()  +
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans")) +
   relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
                                                                         title="Predicting Support for Abortion ",
                                                                         caption="Data from CCES 2016") 
@@ -163,25 +167,31 @@ dwplot(model12, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
-        legend.justification=c(0, -5.5), legend.position=c(0, 0),
+        legend.justification=c(-0.01, -5.7), legend.position=c(0, 0),
         legend.background = element_rect(colour="grey80"),
         legend.title.align = .5) +
+  scale_colour_grey()  +
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans")) +
   relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
                                                                         title="Predicting Support for Abortion ",
-                                                                        caption="Data from CCES 2012")
-
-
+                                                                        caption="Data from CCES 2012") 
 
 dwplot(model08, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
-        legend.justification=c(0, -5.5), legend.position=c(0, 0),
+        legend.justification=c(-0.01, -5.7), legend.position=c(0, 0),
         legend.background = element_rect(colour="grey80"),
         legend.title.align = .5) +
+  scale_colour_grey()  +
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans")) +
   relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
                                                                         title="Predicting Support for Abortion ",
-                                                                        caption="Data from CCES 2008")
+                                                                        caption="Data from CCES 2008") 
 
 
 #### Doing the same with Gss data
@@ -264,36 +274,48 @@ dwplot(model10, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
-        legend.justification=c(-4.5, -0.1), legend.position=c(0, 0),
+        legend.justification=c(-0.01, -5.7), legend.position=c(0, 0),
         legend.background = element_rect(colour="grey80"),
         legend.title.align = .5) +
+  scale_colour_grey()  +
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans")) +
   relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
                                                                         title="Predicting Support for Abortion ",
-                                                                        caption="Data from GSS 2010") 
+                                                                        caption="Data from GSS 2010")  
 
 
 dwplot(model12, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
-        legend.justification=c(-4.5, -0.1), legend.position=c(0, 0),
+        legend.justification=c(-0.01, -5.7), legend.position=c(0, 0),
         legend.background = element_rect(colour="grey80"),
         legend.title.align = .5) +
+  scale_colour_grey()  +
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans")) +
   relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
                                                                         title="Predicting Support for Abortion ",
-                                                                        caption="Data from GSS 2012")
-
+                                                                        caption="Data from GSS 2012")  
 
 
 dwplot(model14, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
-        legend.justification=c(-4.5, -0.1), legend.position=c(0, 0),
+        legend.justification=c(-0.01, -5.7), legend.position=c(0, 0),
         legend.background = element_rect(colour="grey80"),
         legend.title.align = .5) +
+  scale_colour_grey()  +
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans")) +
   relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
                                                                         title="Predicting Support for Abortion ",
-                                                                        caption="Data from GSS 2014")
+                                                                        caption="Data from GSS 2014")  
+
 
 
