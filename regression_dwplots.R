@@ -147,7 +147,7 @@ model16 <- rbind(reg1, reg2)
 model12 <- rbind(reg3, reg4)
 model08 <- rbind(reg5, reg6)
 
-dwplot(model16, dodge_size = .05) +
+cc16 <- dwplot(model16, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
@@ -199,34 +199,46 @@ dwplot(model08, dodge_size = .05) +
 gss10 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss10.dta")
 gss12 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss12.dta")
 gss14 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss14.dta")
+gss16 <- read_dta("D://cces/data/gss16.dta")
 
 gss10$white <- Recode(gss10$race, "1=1;else=0")
 gss12$white <- Recode(gss12$race, "1=1;else=0")
 gss14$white <- Recode(gss14$race, "1=1;else=0")
+gss16$white <- Recode(gss16$race, "1=1;else=0")
 
 gss10$bagain <- Recode(gss10$reborn, "1=1;else=0")
 gss12$bagain <- Recode(gss12$reborn, "1=1;else=0")
 gss14$bagain <- Recode(gss14$reborn, "1=1;else=0")
+gss16$bagain <- Recode(gss16$reborn, "1=1;else=0")
 
 gss10$protestant <- Recode(gss10$relig, "1=1;else=0")
 gss12$protestant <- Recode(gss12$relig, "1=1;else=0")
 gss14$protestant <- Recode(gss14$relig, "1=1;else=0")
+gss16$protestant <- Recode(gss16$relig, "1=1;else=0")
 
 gss10$abort <- Recode(gss10$abany, "1=1; else=0")
 gss12$abort <- Recode(gss12$abany, "1=1; else=0")
 gss14$abort <- Recode(gss14$abany, "1=1; else=0")
+gss16$abort <- Recode(gss16$abany, "1=1; else=0")
 
 gss10$age2 <- gss10$age/89
 gss12$age2 <- gss12$age/89
 gss14$age2 <- gss14$age/89
+gss16$age2 <- gss16$age/89
+
+
 
 gss10$educ2 <- gss10$educ/20
 gss12$educ2 <- gss12$educ/20
 gss14$educ2 <- gss14$educ/20
+gss16$educ2 <- gss16$educ/20
+
 
 gss10$male <- Recode(gss10$sex, "1=1; else=0")
 gss12$male <- Recode(gss12$sex, "1=1; else=0")
 gss14$male <- Recode(gss14$sex, "1=1; else=0")
+gss16$male <- Recode(gss16$sex, "1=1; else=0")
+
 
 gss10$pid7 <- gss10$partyid + 1 
 gss10$pid7[gss10$pid7==8] <- NA
@@ -234,10 +246,14 @@ gss12$pid7 <- gss12$partyid + 1
 gss12$pid7[gss12$pid7==8] <- NA
 gss14$pid7 <- gss14$partyid + 1 
 gss14$pid7[gss14$pid7==8] <- NA
+gss16$pid7 <- gss16$partyid + 1 
+gss16$pid7[gss16$pid7==8] <- NA
 
 gss10$pid7 <- gss10$pid7/7
 gss12$pid7 <- gss12$pid7/7
 gss14$pid7 <- gss14$pid7/7
+gss16$pid7 <- gss16$pid7/7
+
 
 baprot10 <- filter(gss10, white == 1 & protestant ==1 & bagain ==1)
 evan10 <- filter(gss10, white ==1 & evangelical ==1)
@@ -247,6 +263,9 @@ evan12 <- filter(gss12, white ==1 & evangelical ==1)
 
 baprot14 <- filter(gss14, white == 1 & protestant ==1 & bagain ==1)
 evan14 <- filter(gss14, white ==1 & evangelical ==1)
+
+baprot16 <- filter(gss16, white == 1 & protestant ==1 & bagain ==1)
+evan16 <- filter(gss16, white ==1 & evangelical ==1)
 
 reg1 <- glm(abort ~ educ2 + male + age2 + pid7, data = baprot10)
 reg2 <- glm(abort ~ educ2 + male + age2 + pid7, data = evan10)
@@ -266,9 +285,16 @@ reg6 <- glm(abort ~ educ2 + male + age2 + pid7, data = evan14)
 reg5 <- tidy(reg5) %>% mutate(model = "BA + Prot")
 reg6 <- tidy(reg6) %>% mutate(model = "Evangelical")
 
+reg7 <- glm(abort ~ educ2 + male + age2 + pid7, data = baprot16)
+reg8 <- glm(abort ~ educ2 + male + age2 + pid7, data = evan16)
+
+reg7 <- tidy(reg7) %>% mutate(model = "BA + Prot")
+reg8 <- tidy(reg8) %>% mutate(model = "Evangelical")
+
 model10 <- rbind(reg1, reg2)
 model12 <- rbind(reg3, reg4)
 model14 <- rbind(reg5, reg6)
+model16 <- rbind(reg7, reg8)
 
 dwplot(model10, dodge_size = .05) +
   theme_bw() +
@@ -316,6 +342,22 @@ dwplot(model14, dodge_size = .05) +
   relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
                                                                         title="Predicting Support for Abortion ",
                                                                         caption="Data from GSS 2014")  
+
+
+gss16 <- dwplot(model16, dodge_size = .05) +
+  theme_bw() +
+  geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
+  theme(plot.title = element_text(face="bold"),
+        legend.justification=c(-0.01, -5.7), legend.position=c(0, 0),
+        legend.background = element_rect(colour="grey80"),
+        legend.title.align = .5) +
+  scale_colour_grey()  +
+  theme(legend.title = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme(text=element_text(size=16, family="KerkisSans")) +
+  relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
+                                                                        title="Predicting Support for Abortion ",
+                                                                        caption="Data from GSS 2016")  
 
 
 

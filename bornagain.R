@@ -159,7 +159,7 @@ ggplot(pidplot %>% filter(pid7 <= 7 ), aes(x=pid7, y=weight*100, fill = type)) +
 
 ### Checking the Mean PID difference in the two approaches in the CCES and the GSS
 
-cces2008$pid7[cces2008$pid7==8] <- NA
+cces08$pid7[cces08$pid7==8] <- NA
 cces12$pid7[cces12$pid7==8] <- NA
 cces16$pid7[cces16$pid7==8] <- NA
 
@@ -231,17 +231,26 @@ gssm6 <- gss14 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid))
   summarise(mean = mean(partyid)) %>% 
   mutate(type = c("White Evangelical"), year = c("GSS 2014")) 
 
-meangssba <- rbind(gssm1, gssm3, gssm5)
+gssm7 <- gss16 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(partyid)) %>% 
+  summarise(mean = mean(partyid)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("GSS 2016")) 
+
+
+gssm8 <- gss16 %>%  filter(evangelical ==1 & race ==1 & complete.cases(partyid)) %>% 
+  summarise(mean = mean(partyid)) %>% 
+  mutate(type = c("White Evangelical"), year = c("GSS 2016")) 
+
+meangssba <- rbind(gssm1, gssm3, gssm5, gssm7)
 mean(meangssba$mean)
 #3.746051
-meangssevan <- rbind(gssm2, gssm4, gssm6)
+meangssevan <- rbind(gssm2, gssm4, gssm6, gssm8)
 mean(meangssevan$mean)
 #3.736456
 
 mean(meangssba$mean) - mean(meangssevan$mean)
 ## 0.009594778
 
-meanall2 <- rbind(gssm1, gssm3, gssm5,gssm2, gssm4, gssm6 )
+meanall2 <- rbind(gssm1, gssm3, gssm5, gssm7, gssm2, gssm4, gssm6, gssm8 )
 
 mean <- rbind(meanall, meanall2)
 
@@ -359,6 +368,7 @@ meanall <- rbind(mean4, mean5, mean6, mean1, mean2, mean3)
 gss10$att <- Recode(gss10$attend, "8=6; 6:7=5; 4:5=4; 3=3; 2=2; 1=1; 0=0")
 gss12$att <- Recode(gss12$attend, "8=6; 6:7=5; 4:5=4; 3=3; 2=2; 1=1; 0=0")
 gss14$att <- Recode(gss14$attend, "8=6; 6:7=5; 4:5=4; 3=3; 2=2; 1=1; 0=0")
+gss16$att <- Recode(gss16$attend, "8=6; 6:7=5; 4:5=4; 3=3; 2=2; 1=1; 0=0")
 
 
 
@@ -391,7 +401,16 @@ gssm6 <- gss14 %>%  filter(evangelical ==1 & race ==1 & complete.cases(att)) %>%
   summarise(mean = mean(att)) %>% 
   mutate(type = c("White Evangelical"), year = c("GSS 2014")) 
 
-meanall2 <- rbind(gssm1, gssm3, gssm5,gssm2, gssm4, gssm6 )
+gssm7 <- gss16 %>%  filter(reborn ==1 & race ==1 & relig ==1 & complete.cases(att)) %>% 
+  summarise(mean = mean(att)) %>% 
+  mutate(type = c("White BA + Prot"), year = c("GSS 2016")) 
+
+
+gssm8 <- gss16 %>%  filter(evangelical ==1 & race ==1 & complete.cases(att)) %>% 
+  summarise(mean = mean(att)) %>% 
+  mutate(type = c("White Evangelical"), year = c("GSS 2016")) 
+
+meanall2 <- rbind(gssm1, gssm3, gssm5,gssm2, gssm4, gssm6, gssm7, gssm8 )
 
 mean <- rbind(meanall, meanall2)
 

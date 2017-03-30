@@ -28,13 +28,13 @@ ev14 <- filter(gss14, evangelical ==1 & white ==1)
 ba14 <- filter(gss14, bagain ==1 & white ==1 & protestant ==1)
 ##18.9
 
-gss <- data.frame(survey = c("GSS 2010", "GSS 2010", "GSS 2012", "GSS 2012", "GSS 2014", "GSS 2014"),
-                   sample = c("Evangelical", "BA + Prot.", "Evangelical", "BA + Prot.", "Evangelical", "BA + Prot."),
-                   pct =c(20.2, 18.7, 20.2, 19.8, 18.6, 18.9))
+gss <- data.frame(survey = c("GSS 2010", "GSS 2010", "GSS 2012", "GSS 2012", "GSS 2014", "GSS 2014", "GSS 2016", "GSS 2016"),
+                   sample = c("Evangelical", "BA + Prot.", "Evangelical", "BA + Prot.", "Evangelical", "BA + Prot.", "Evangelical", "BA + Prot."),
+                   pct =c(20.2, 18.7, 20.2, 19.8, 18.6, 18.9, 19.0, 19.8 ))
 
 total <- rbind(gss, cces)
 
-total$moe <- c(4.31, 4.52, 4.39, 4.44, 4.07, 4.03, 1.06, 1.19, .86, .91, .87, .97)
+total$moe <- c(4.31, 4.52, 4.39, 4.44, 4.07, 4.03, 3.78, 3.68, 1.06, 1.19, .86, .91, .87, .97)
 
 limits <- aes(ymax = total$pct + total$moe, ymin = total$pct - total$moe)
 
