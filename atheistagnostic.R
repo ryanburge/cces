@@ -9,6 +9,7 @@ library(forcats)
 library(haven)
 
 
+cces <- cces16 
 
 cces <- read_dta("C:/Users/Ryan Burge/Desktop/cces.dta")
 
@@ -79,9 +80,9 @@ cces$mainline <- Recode(cces$mainline, "1:4=1; else=0")
 ## Black Protestant
 
 bprot <- filter(cces, black ==1 & religpew ==1)
-#cces$protestant <- Recode(cces$religpew, "1=1; else=0")
-#cces$bprot <- cces$black + cces$protesant
-#cces$bprot <- Recode(cces$bprot, "2=3; else=0")
+cces$protestant <- Recode(cces$religpew, "1=1; else=0")
+cces$bprot <- cces$black + cces$protesant
+cces$bprot <- Recode(cces$bprot, "2=1; else=0")
 
 ## Catholic 
 cces$catholic <- Recode(cces$religpew_catholic, "1:90=1; else=0")
@@ -159,12 +160,13 @@ pid$variable <- c("Party Identification")
 pid <- mutate(pid, class=factor(class, levels=rev(class)))
 
 
-ggplot(pid, aes(x = pid7, y = variable))  +
+pidplot <- ggplot(pid, aes(x = value, y = variable))  +
   geom_point(color = "black", shape=21, size =4, aes(fill = factor(class))) +  theme(legend.title=element_blank()) +
   theme(legend.position = "bottom") +xlab("Generally speaking, do you think of yourself as a ...?") + ylab("") + xlim(1,7.5)  +
   scale_x_continuous(limits = c(1,7), breaks = c(1,2,3,4,5, 6, 7), labels = c("Strong Dem.", "Not Strong Dem.", "Lean Dem.", "Neither", "Lean Rep.", "Not Strong Rep.", "Strong Rep.")) + 
   theme(text=element_text(size=18, family="KerkisSans")) +  
-  scale_fill_manual(values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6"))
+  scale_fill_manual(values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  guides(fill=FALSE)
 
 
 mean(evangelical$newideo, na.rm = TRUE)
@@ -199,10 +201,100 @@ ideo$variable <- c("Political Ideology ")
 
 ideo <- mutate(ideo, class=factor(class, levels=rev(class)))
 
-ggplot(ideo, aes(x = ideo5, y = variable))  +
+idplot <- ggplot(ideo, aes(x = value, y = variable))  +
   geom_point(color = "black", shape=21, size =4, aes(fill = factor(class))) +  theme(legend.title=element_blank()) +
   theme(legend.position = "bottom") +xlab("Generally speaking, do you think of yourself as a ...?") + ylab("")  +
   scale_x_continuous(limits =c(1.5,4.5), breaks = c(1,2,3,4,5), labels = c("Very liberal", "Liberal", "Moderate", "Conservative", "Very Conservative")) + 
   theme(text=element_text(size=18, family="KerkisSans")) +
   scale_fill_manual(values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6"))
+
+
+pid <- pid %>% rename(value = pid7)
+ideo <- ideo %>% rename(value = ideo5)
+
+ideo %>% bind_rows(pid)
+
+plot <- bind_rows(ideo, pid)
+
+ggplot(plot, aes(x = value, y = variable))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(class))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("Generally speaking, do you think of yourself as a ...?") + ylab("")  +
+  scale_x_continuous(limits =c(1.5,4.5), breaks = c(1,2,3,4,5), labels = c("Very liberal", "Liberal", "Moderate", "Conservative", "Very Conservative")) + 
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) + facet_grid(variable ~ .)
+
+grid.newpage()
+grid.draw(rbind(ggplotGrob(pidplot), ggplotGrob(idplot),  size = "last"))
+
+## Abortion Public Opinion
+
+cces$abort1 <- Recode(cces$CC16_332a, "2=1; else=0") ## Always Allow
+cces$abort2 <- Recode(cces$CC16_332b, "1=1; else=0") ## Only Rape, Incest, Life of Mother
+cces$abort3 <- Recode(cces$CC16_332c, "1=1; else=0") ## Ban after 20 weeks
+cces$abort4 <- Recode(cces$CC16_332d, "1=1; else=0") ## Employers decline abortion coverage
+cces$abort5 <- Recode(cces$CC16_332e, "1=1; else=0") ## Prohibit federal funds for abortion
+cces$abort6 <- Recode(cces$CC16_332f, "1=1; else=0") ## Make abortion illegal in all circumstances
+
+
+rel <- cces %>% select(V101, evangelical, mainline, bprot, catholic, mormon, jewish, muslim, buddhist, hindu, atheist, agnostic)
+reltrad <- rel %>% gather(reltrad, x1, evangelical:agnostic) %>% filter(x1==1) %>% select(reltrad)
+abort <- cces %>% select(V101, abort1:abort6)
+
+aplot <- abort %>% right_join(reltrad) %>% 
+  select(-V101) %>% group_by(reltrad) %>% 
+  summarise(a1 = mean(abort1), a2 = mean(abort2), a3 = mean(abort3), a4 = mean(abort4), a5 = mean(abort5), a6 = mean(abort6)) %>% 
+  melt(id =c("reltrad"))
+
+
+aplot <- aplot %>% filter(reltrad == "evangelical" | reltrad == "mainline" | reltrad == "catholic" | reltrad == "bprot" | reltrad == "atheist" | reltrad ==  "agnostic")
+
+
+aplot %>% filter(variable == "a1") %>% ggplot(., aes(x = value*100, y = variable))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("% That Oppose Abortion as a Matter of Choice") + ylab("")  +
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  scale_x_continuous(breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c(""))
+
+
+aplot %>% filter(variable == "a2") %>% ggplot(., aes(x = value*100, y = variable))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("% That Support Abortion Only for Rape, Incest, Life of Mother") + ylab("")  +
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  scale_x_continuous(limits = c(0,80), breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c(""))
+
+aplot %>% filter(variable == "a3") %>% ggplot(., aes(x = value*100, y = variable))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("% That Support Prohibiting Abortion After 20 Weeks") + ylab("")  +
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  scale_x_continuous(limits = c(0,80), breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c(""))
+
+aplot %>% filter(variable == "a4") %>% ggplot(., aes(x = value*100, y = variable))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("% That Support Employers Declining Abortion Coverage in Insurance Plans") + ylab("")  +
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  scale_x_continuous(limits = c(0,80), breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c(""))
+
+aplot %>% filter(variable == "a5") %>% ggplot(., aes(x = value*100, y = variable))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("% That Support Prohibiting Federal Funds for Abortion") + ylab("")  +
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  scale_x_continuous(limits = c(0,80), breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c(""))
+
+aplot %>% filter(variable == "a6") %>% ggplot(., aes(x = value*100, y = variable))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("% That Support Making Abortion Completely Illegal") + ylab("")  +
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  scale_x_continuous(limits = c(0,80), breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c(""))
+
+
+
+
+
+
 
