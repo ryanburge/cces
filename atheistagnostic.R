@@ -7,11 +7,14 @@ library(extrafont)
 library(weights)
 library(forcats)
 library(haven)
+library(grid)
+library(tidyr)
+library(reshape2)
 
 
 cces <- cces16 
 
-cces <- read_dta("C:/Users/Ryan Burge/Desktop/cces.dta")
+cces <- read_dta("D:/cces/data/cces.dta")
 
 cces$white <- Recode(cces$race, "1=1; else=0")
 
@@ -81,7 +84,7 @@ cces$mainline <- Recode(cces$mainline, "1:4=1; else=0")
 
 bprot <- filter(cces, black ==1 & religpew ==1)
 cces$protestant <- Recode(cces$religpew, "1=1; else=0")
-cces$bprot <- cces$black + cces$protesant
+cces$bprot <- cces$black + cces$protestant
 cces$bprot <- Recode(cces$bprot, "2=1; else=0")
 
 ## Catholic 
@@ -237,7 +240,7 @@ cces$abort6 <- Recode(cces$CC16_332f, "1=1; else=0") ## Make abortion illegal in
 
 
 rel <- cces %>% select(V101, evangelical, mainline, bprot, catholic, mormon, jewish, muslim, buddhist, hindu, atheist, agnostic)
-reltrad <- rel %>% gather(reltrad, x1, evangelical:agnostic) %>% filter(x1==1) %>% select(reltrad)
+reltrad <- rel %>% gather(reltrad, x1, evangelical:agnostic) %>% filter(x1==1) %>% select(V101,reltrad)
 abort <- cces %>% select(V101, abort1:abort6)
 
 aplot <- abort %>% right_join(reltrad) %>% 
@@ -248,6 +251,7 @@ aplot <- abort %>% right_join(reltrad) %>%
 
 aplot <- aplot %>% filter(reltrad == "evangelical" | reltrad == "mainline" | reltrad == "catholic" | reltrad == "bprot" | reltrad == "atheist" | reltrad ==  "agnostic")
 
+##levels(aplot$variable) <- c("Oppose as Matter of Choice", "Only for Rape, Incest", "Prohibit Late Term", "Decline Abortion Insurance", "Prohibit Federal Funds", "Completely Illegal")
 
 aplot %>% filter(variable == "a1") %>% ggplot(., aes(x = value*100, y = variable))  +
   geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
@@ -255,7 +259,6 @@ aplot %>% filter(variable == "a1") %>% ggplot(., aes(x = value*100, y = variable
   theme(text=element_text(size=18, family="KerkisSans")) +
   scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
   scale_x_continuous(breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c(""))
-
 
 aplot %>% filter(variable == "a2") %>% ggplot(., aes(x = value*100, y = variable))  +
   geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
@@ -293,8 +296,71 @@ aplot %>% filter(variable == "a6") %>% ggplot(., aes(x = value*100, y = variable
   scale_x_continuous(limits = c(0,80), breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c(""))
 
 
+aplot %>% ggplot(., aes(x = value*100, y = variable))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("% That Support Making Abortion Completely Illegal") + ylab("")  +
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  scale_x_continuous(limits = c(0,80), breaks = c(10,20,30,40,50,60,70,80,90,100)) +scale_y_discrete(labels = c("")) + facet_grid(variable ~ .)
 
 
+tplot <- aplot %>% group_by(reltrad) %>% 
+  summarise(mean = mean(value)) %>%
+  mutate(label = c("Overall"))
+
+tplot %>% ggplot(., aes(x = mean , y = label))  +
+  geom_point(color = "black", shape=21, size =4, aes(fill = factor(reltrad))) +  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") +xlab("Abortion Opposition Scale") + ylab("")  +
+  theme(text=element_text(size=18, family="KerkisSans")) +
+  scale_fill_manual(labels =c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"), values = c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6","#A30059","#FFDBE5","#7A4900","#0000A6")) +
+  scale_x_continuous(limits = c(0,.6), breaks = c(0,.1,.2,.3,.40,.50,.60)) +scale_y_discrete(labels = c(""))
+
+## Gay Marriage
+
+cces$gay <- Recode(cces$CC16_335, "1=1; else=0")
+
+gayplot <- cces %>% right_join(reltrad) %>% 
+  group_by(reltrad) %>% 
+  summarise(mean = mean(gay)) %>%  
+  filter(reltrad == "evangelical" | reltrad == "mainline" | reltrad == "catholic" | reltrad == "bprot" | reltrad == "atheist" | reltrad ==  "agnostic")
+
+colors <- c("#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941")
+gayplot$reltrad <- as_factor(gayplot$reltrad)
+
+gayplot$reltrad <- factor(gayplot$reltrad, labels = c("Agnostic", "Atheist", "Black Protestant", "Catholic", "Evangelical", "Mainline"))
+
+gayplot %>% ggplot(., aes(x=reorder(reltrad,-mean), y=mean*100)) + geom_col(fill = colors, color = "black") +
+  theme(text=element_text(size=18, family="KerkisSans")) + xlab("Religious Tradition") + ylab("Percent in Favor") +
+  ggtitle("Do you favor or oppose allowing gays and lesbians to marry legally?") +labs(caption = "Data from CCES 2016")
+
+## VOTE 16
+
+cces$vote16 <- cces$CC16_410a
+cces$vote16 <- as.numeric(cces$vote16)
+
+cces$vote16 <- Recode(cces$vote16, "1='Donald Trump';
+2='Hillary Clinton';
+3='Gary Johnson';
+4='Jill Stein';
+else = NA")
+
+voteplot <- cces %>% right_join(reltrad) %>% 
+  group_by(reltrad) %>% 
+  filter(complete.cases(vote16)) %>% 
+  filter(reltrad == "atheist" | reltrad == "agnostic") %>% 
+  count(vote16) %>% mutate(weight = prop.table(n))
+
+voteplot$vote16 <- word(voteplot$vote16, -1)
+voteplot$reltrad <- factor(voteplot$reltrad, labels = c("Agnostic", "Atheist"))
+
+colors <- c("dodgerblue3", "firebrick1" , "gold1", "chartreuse1", "dodgerblue3", "firebrick1" , "gold1", "chartreuse1")
 
 
-
+ggplot(voteplot, aes(x=reorder(vote16, -weight), y=weight*100)) + geom_col(fill = colors, color = "black", position= "dodge")  + 
+  ggtitle("Agnostics and Atheists at the Ballot Box") +
+  scale_fill_manual(values = c("chartreuse1", "dodgerblue3","firebrick1","gold1")) +
+  xlab("Candidate") + ylab("Percentage of the Vote") + 
+  theme(legend.title=element_blank()) + 
+  theme(text=element_text(size=24, family="KerkisSans"))  +
+  theme(legend.position = "bottom")  +
+  theme(plot.title = element_text(hjust = 0.5)) + facet_wrap(~reltrad)
