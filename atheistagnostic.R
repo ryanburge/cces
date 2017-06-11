@@ -12,7 +12,6 @@ library(tidyr)
 library(reshape2)
 
 
-cces <- cces16 
 
 cces <- read_dta("D:/cces/data/cces.dta")
 
