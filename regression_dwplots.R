@@ -163,7 +163,7 @@ cc16 <- dwplot(model16, dodge_size = .05) +
                                                                         caption="Data from CCES 2016") 
 
 
-dwplot(model12, dodge_size = .05) +
+cc12 <- dwplot(model12, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
@@ -178,7 +178,7 @@ dwplot(model12, dodge_size = .05) +
                                                                         title="Predicting Support for Abortion ",
                                                                         caption="Data from CCES 2012") 
 
-dwplot(model08, dodge_size = .05) +
+cc08 <- dwplot(model08, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
@@ -199,7 +199,8 @@ dwplot(model08, dodge_size = .05) +
 gss10 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss10.dta")
 gss12 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss12.dta")
 gss14 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss14.dta")
-gss16 <- read_dta("D://cces/data/gss16.dta")
+gss16 <- read_dta("D:/cces/data/gss16.dta")
+
 
 gss10$white <- Recode(gss10$race, "1=1;else=0")
 gss12$white <- Recode(gss12$race, "1=1;else=0")
@@ -226,12 +227,15 @@ gss12$age2 <- gss12$age/89
 gss14$age2 <- gss14$age/89
 gss16$age2 <- gss16$age/89
 
+gss10$educ2 <- Recode(gss10$educ, "1:11 =1; 12=2; 13:14=3; 15=4; 16=5; 17:20=6")
+gss12$educ2 <- Recode(gss12$educ, "1:11 =1; 12=2; 13:14=3; 15=4; 16=5; 17:20=6")
+gss14$educ2 <- Recode(gss14$educ, "1:11 =1; 12=2; 13:14=3; 15=4; 16=5; 17:20=6")
+gss16$educ2 <- Recode(gss16$educ, "1:11 =1; 12=2; 13:14=3; 15=4; 16=5; 17:20=6")
 
-
-gss10$educ2 <- gss10$educ/20
-gss12$educ2 <- gss12$educ/20
-gss14$educ2 <- gss14$educ/20
-gss16$educ2 <- gss16$educ/20
+gss10$educ2 <- gss10$educ2/6
+gss12$educ2 <- gss12$educ2/6
+gss14$educ2 <- gss14$educ2/6
+gss16$educ2 <- gss16$educ2/6
 
 
 gss10$male <- Recode(gss10$sex, "1=1; else=0")
@@ -296,7 +300,7 @@ model12 <- rbind(reg3, reg4)
 model14 <- rbind(reg5, reg6)
 model16 <- rbind(reg7, reg8)
 
-dwplot(model10, dodge_size = .05) +
+g10 <- dwplot(model10, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
@@ -312,7 +316,7 @@ dwplot(model10, dodge_size = .05) +
                                                                         caption="Data from GSS 2010")  
 
 
-dwplot(model12, dodge_size = .05) +
+g12 <- dwplot(model12, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
@@ -328,7 +332,7 @@ dwplot(model12, dodge_size = .05) +
                                                                         caption="Data from GSS 2012")  
 
 
-dwplot(model14, dodge_size = .05) +
+g14 <- dwplot(model14, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),
@@ -344,7 +348,7 @@ dwplot(model14, dodge_size = .05) +
                                                                         caption="Data from GSS 2014")  
 
 
-gss16 <- dwplot(model16, dodge_size = .05) +
+g16 <- dwplot(model16, dodge_size = .05) +
   theme_bw() +
   geom_vline(xintercept = 0, colour = "grey60", linetype = 2) +
   theme(plot.title = element_text(face="bold"),

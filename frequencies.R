@@ -1,3 +1,5 @@
+## This is how to make Figure 1 for the POQ Measuring Evangelicals Piece
+
 ev16 <- filter(cces16, evangelical ==1 & white ==1)
 ##16.5
 ba16 <- filter(cces16, bagain ==1 & white ==1 & protestant ==1)
@@ -11,7 +13,7 @@ ev08 <- filter(cces08, evangelical ==1 & white ==1)
 ba08 <- filter(cces08, bagain ==1 & white ==1 & protestant ==1)
 ##17.2
 
-cces <- data.frame(survey = c("CCES 2008", "CCES 2008", "CCES 2012", "CCES 2012", "CCES 2016", "CCES 2016"),
+cces1 <- data.frame(survey = c("CCES 2008", "CCES 2008", "CCES 2012", "CCES 2012", "CCES 2016", "CCES 2016"),
                    sample = c("Evangelical", "BA + Prot.", "Evangelical", "BA + Prot.", "Evangelical", "BA + Prot."),
                    pct =c(20.6, 17.2, 19.1, 17.6, 16.5, 13.8))
 
@@ -28,11 +30,11 @@ ev14 <- filter(gss14, evangelical ==1 & white ==1)
 ba14 <- filter(gss14, bagain ==1 & white ==1 & protestant ==1)
 ##18.9
 
-gss <- data.frame(survey = c("GSS 2010", "GSS 2010", "GSS 2012", "GSS 2012", "GSS 2014", "GSS 2014", "GSS 2016", "GSS 2016"),
+gss1 <- data.frame(survey = c("GSS 2010", "GSS 2010", "GSS 2012", "GSS 2012", "GSS 2014", "GSS 2014", "GSS 2016", "GSS 2016"),
                    sample = c("Evangelical", "BA + Prot.", "Evangelical", "BA + Prot.", "Evangelical", "BA + Prot.", "Evangelical", "BA + Prot."),
                    pct =c(20.2, 18.7, 20.2, 19.8, 18.6, 18.9, 19.0, 19.8 ))
 
-total <- rbind(gss, cces)
+total <- rbind(gss1, cces1)
 
 total$moe <- c(4.31, 4.52, 4.39, 4.44, 4.07, 4.03, 3.78, 3.68, 1.06, 1.19, .86, .91, .87, .97)
 
