@@ -9,11 +9,6 @@ cces16 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/cces.dta")
 cces12 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/cces12.dta")
 cces08 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/cces2008.dta")
 
-gss10 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss10.dta")
-gss12 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss12.dta")
-gss14 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss14.dta")
-
-
 ##Getting an Evangelical Variable
 cces16$evanbaptist <- Recode(cces16$religpew_baptist, "1=1; 5:90=1; else=0")
 cces16$evanmeth <- Recode(cces16$religpew_methodist, "2=1; else=0")
@@ -194,7 +189,7 @@ cc08 <- dwplot(model08, dodge_size = .05) +
                                                                         caption="Data from CCES 2008") 
 
 
-#### Doing the same with Gss data
+#### Doing the same with GSS data
 
 gss10 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss10.dta")
 gss12 <- read_dta("C:/Users/Ryan Burge/Dropbox/data/gss12.dta")
