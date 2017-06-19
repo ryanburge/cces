@@ -119,10 +119,10 @@ cces$nothing <- Recode(cces$religpew, "11=1; else=0")
 
 ## This is just making the overall demos chart. 
 
-rel <- cces %>% select(V101, evangelical, mainline, bprot, catholic, mormon, jewish, muslim, buddhist, hindu, atheist, agnostic, nothing)
-reltrad <- rel %>% gather(reltrad, x1, evangelical:nothing) %>% filter(x1==1) %>% select(V101,reltrad)
+rel <- cces %>% select(V101, commonweight_post, evangelical, mainline, bprot, catholic, mormon, jewish, muslim, buddhist, hindu, atheist, agnostic, nothing)
+reltrad <- rel %>% gather(reltrad, x1, evangelical:nothing) %>% filter(x1==1) %>% select(V101,reltrad, commonweight_post)
 
-p1 <- reltrad %>%  count(reltrad) %>% mutate(weight = prop.table(n)) 
+p1 <- reltrad %>%  count(reltrad, wt = commonweight_post) %>% mutate(weight = prop.table(n)) 
 
 p1$reltrad <- factor(p1$reltrad , levels=unique(p1$reltrad))
 
@@ -139,12 +139,14 @@ ggplot(p1, aes(1, y=weight, fill = reltrad)) + geom_col(colour = "black") +
 
 ## This is just making the big demo chart
 
-t1 <- tibble("group" =c("No Religion", "Protestants", "Catholics", "Everyone Else"), count = c(20004, 28797 , 14877, 3852 ))
+t1 <- tibble("group" =c("No Religion", "Protestants", "Catholics", "Everyone Else"), count = c(16162, 24835 , 11433, 2912 ))
 t1$group <- as_factor(t1$group)
 
 t1 <- t1 %>% mutate(pct = count/sum(count)) 
 
 t1$group <- fct_relevel(t1$group, "Protestants" , "No Religion" , "Catholics", "Everyone Else")
+
+t1$label <- c("Distribution")
 
 ggplot(t1, aes(x=label, y=pct*100, fill = forcats::fct_rev(group))) + geom_col(color = "black") + coord_flip() +
   theme(legend.position = "bottom") + guides(fill = guide_legend(reverse=TRUE)) +
@@ -156,6 +158,27 @@ ggplot(t1, aes(x=label, y=pct*100, fill = forcats::fct_rev(group))) + geom_col(c
 
 ggsave(file="none_dist.png", type = "cairo-png", width = 10, height = 2)
   
+## This is just making the big demo chart
+
+t2 <- tibble("group" =c("Nothing in Particular", "Atheist", "Agnostic"), count = c(10162, 3009 , 2991))
+t2$group <- as_factor(t2$group)
+
+t2 <- t2 %>% mutate(pct = count/sum(count)) 
+
+t2$group <- fct_relevel(t2$group, "Protestants" , "No Religion" , "Catholics", "Everyone Else")
+
+t2$label <- c("Distribution")
+
+ggplot(t2, aes(x=label, y=pct*100, fill = group)) + geom_col(color = "black") + coord_flip() +
+  theme(legend.position = "bottom") + guides(fill = guide_legend(reverse=TRUE)) +
+  scale_x_discrete(labels = c("")) + xlab("") + 
+  ylab("Percent of Sample") + theme(legend.title=element_blank())  +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  theme(text=element_text(size=24, family="KerkisSans")) + ggtitle("Who are the 'No Religion'?") +
+  labs(caption = "Data from CCES 2016")
+
+ggsave(file="none_dist_2.png", type = "cairo-png", width = 10, height = 2)
+
 
 ## Gay Marriage
 
