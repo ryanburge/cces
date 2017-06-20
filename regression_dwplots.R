@@ -91,9 +91,9 @@ cces12$age <- cces12$age/94
 cces16$age <- 2016- cces16$birthyr
 cces16$age <- cces16$age/99
 
-cces08$educ <- cces08$V213/6
-cces12$educ <- cces12$educ/6
-cces16$educ <- cces16$educ/6
+cces08$educ2 <- cces08$V213/6
+cces12$educ2 <- cces12$educ/6
+cces16$educ2 <- cces16$educ/6
 
 cces08$male <- Recode(cces08$V208, "1=1; else=0")
 cces12$male <- Recode(cces12$gender, "1=1; else=0")
@@ -119,21 +119,21 @@ baprot08 <- filter(cces08, white == 1 & protestant ==1 & bagain ==1)
 evan08 <- filter(cces08, white ==1 & evangelical ==1)
 
 
-reg1 <- glm(abort ~ educ + male + age + pid, data = baprot16)
-reg2 <- glm(abort ~ educ + male + age + pid, data = evan16)
+reg1 <- glm(abort ~ educ2 + male + age + pid, data = baprot16)
+reg2 <- glm(abort ~ educ2 + male + age + pid, data = evan16)
 
 reg1 <- tidy(reg1) %>% mutate(model = "BA + Prot")
 reg2 <- tidy(reg2) %>% mutate(model = "Evangelical")
 
 
-reg3 <- glm(abort ~ educ + male + age + pid, data = baprot12)
-reg4 <- glm(abort ~ educ + male + age + pid, data = evan12)
+reg3 <- glm(abort ~ educ2 + male + age + pid, data = baprot12)
+reg4 <- glm(abort ~ educ2 + male + age + pid, data = evan12)
 
 reg3 <- tidy(reg3) %>% mutate(model = "BA + Prot")
 reg4 <- tidy(reg4) %>% mutate(model = "Evangelical")
 
-reg5 <- glm(abort ~ educ + male + age + pid, data = baprot08)
-reg6 <- glm(abort ~ educ + male + age + pid, data = evan08)
+reg5 <- glm(abort ~ educ2 + male + age + pid, data = baprot08)
+reg6 <- glm(abort ~ educ2 + male + age + pid, data = evan08)
 
 reg5 <- tidy(reg5) %>% mutate(model = "BA + Prot")
 reg6 <- tidy(reg6) %>% mutate(model = "Evangelical")
@@ -357,6 +357,108 @@ g16 <- dwplot(model16, dodge_size = .05) +
   relabel_y_axis(c("Education", "Male", "Age", "Republican ID")) + labs(x="Coefficient Estimate", y="", 
                                                                         title="Predicting Support for Abortion ",
                                                                         caption="Data from GSS 2016")  
+
+cces08$whtbaprot <- cces08$bagain + cces08$white + cces08$protestant
+cces08$whtbaprot <- Recode(cces08$whtbaprot, "3=1; else=0")
+cces08$whtevan <- cces08$evangelical + cces08$white
+cces08$whtevan <- Recode(cces08$whtevan, "2=1; else=0")
+
+
+cces12$whtbaprot <- cces12$bagain + cces12$white + cces12$protestant
+cces12$whtbaprot <- Recode(cces12$whtbaprot, "3=1; else=0")
+cces12$whtevan <- cces12$evangelical + cces12$white
+cces12$whtevan <- Recode(cces12$whtevan, "2=1; else=0")
+
+
+cces16$whtbaprot <- cces16$bagain + cces16$white + cces16$protestant
+cces16$whtbaprot <- Recode(cces16$whtbaprot, "3=1; else=0")
+cces16$whtevan <- cces16$evangelical + cces16$white
+cces16$whtevan <- Recode(cces16$whtevan, "2=1; else=0")
+
+
+
+gss10$whtbaprot <- gss10$white  + gss10$protestant  + gss10$bagain 
+gss10$whtbaprot <- Recode(gss10$whtbaprot, "3=1; else=0")
+gss10$whtevan <- gss10$white  + gss10$evangelical 
+gss10$whtevan <- Recode(gss10$whtevan, "2=1; else=0")
+
+gss12$whtbaprot <- gss12$white  + gss12$protestant  + gss12$bagain 
+gss12$whtbaprot <- Recode(gss12$whtbaprot, "3=1; else=0")
+gss12$whtevan <- gss12$white  + gss12$evangelical 
+gss12$whtevan <- Recode(gss12$whtevan, "2=1; else=0")
+
+gss14$whtbaprot <- gss14$white  + gss14$protestant  + gss14$bagain 
+gss14$whtbaprot <- Recode(gss14$whtbaprot, "3=1; else=0")
+gss14$whtevan <- gss14$white  + gss14$evangelical 
+gss14$whtevan <- Recode(gss14$whtevan, "2=1; else=0")
+
+gss16$whtbaprot <- gss16$white  + gss16$protestant  + gss16$bagain 
+gss16$whtbaprot <- Recode(gss16$whtbaprot, "3=1; else=0")
+gss16$whtevan <- gss16$white  + gss16$evangelical 
+gss16$whtevan <- Recode(gss16$whtevan, "2=1; else=0")
+
+gss10 %>% filter(whtbaprot ==1) %>% summarise(age = mean(age, na.rm = TRUE))
+gss10 %>% filter(whtevan ==1) %>% summarise(age = mean(age, na.rm = TRUE))
+
+gss12 %>% filter(whtbaprot ==1) %>% summarise(age = mean(age, na.rm = TRUE))
+gss12 %>% filter(whtevan ==1) %>% summarise(age = mean(age, na.rm = TRUE))
+
+gss14 %>% filter(whtbaprot ==1) %>% summarise(age = mean(age, na.rm = TRUE))
+gss14 %>% filter(whtevan ==1) %>% summarise(age = mean(age, na.rm = TRUE))
+
+gss16 %>% filter(whtbaprot ==1) %>% summarise(age = mean(age, na.rm = TRUE))
+gss16 %>% filter(whtevan ==1) %>% summarise(age = mean(age, na.rm = TRUE))
+
+
+gss10 %>% filter(whtbaprot ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+gss10 %>% filter(whtevan ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+
+gss12 %>% filter(whtbaprot ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+gss12 %>% filter(whtevan ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+
+gss14 %>% filter(whtbaprot ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+gss14 %>% filter(whtevan ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+
+gss16 %>% filter(whtbaprot ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+gss16 %>% filter(whtevan ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+
+
+cces08 %>% filter(whtbaprot ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+cces08 %>% filter(whtevan ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+
+cces12 %>% filter(whtbaprot ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+cces12 %>% filter(whtevan ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+
+cces16 %>% filter(whtbaprot ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+cces16 %>% filter(whtevan ==1) %>% summarise(male = mean(male, na.rm = TRUE))
+
+
+cces08 %>% filter(whtbaprot ==1) %>% summarise(educ = mean(V213, na.rm = TRUE))
+cces08 %>% filter(whtevan ==1) %>% summarise(educ = mean(V213, na.rm = TRUE))
+
+cces12 %>% filter(whtbaprot ==1) %>% summarise(educ = mean(educ, na.rm = TRUE))
+cces12 %>% filter(whtevan ==1) %>% summarise(educ = mean(educ, na.rm = TRUE))
+
+gss10 %>% filter(whtbaprot ==1) %>% summarise(educ = mean(educ2, na.rm = TRUE))
+gss10 %>% filter(whtevan ==1) %>% summarise(educ = mean(educ2, na.rm = TRUE))
+
+gss12 %>% filter(whtbaprot ==1) %>% summarise(educ = mean(educ2, na.rm = TRUE))
+gss12 %>% filter(whtevan ==1) %>% summarise(educ = mean(educ2, na.rm = TRUE))
+
+gss14 %>% filter(whtbaprot ==1) %>% summarise(educ = mean(educ2, na.rm = TRUE))
+gss14 %>% filter(whtevan ==1) %>% summarise(educ = mean(educ2, na.rm = TRUE))
+
+gss16 %>% filter(whtbaprot ==1) %>% summarise(educ = mean(educ2, na.rm = TRUE))
+gss16 %>% filter(whtevan ==1) %>% summarise(educ = mean(educ2, na.rm = TRUE))
+
+gss10 %>% crosstab(whtbaprot, whtevan) %>% adorn_crosstab(denom = "all", show_totals = TRUE)
+gss12 %>% crosstab(whtbaprot, whtevan) %>% adorn_crosstab(denom = "all", show_totals = TRUE)
+gss14 %>% crosstab(whtbaprot, whtevan) %>% adorn_crosstab(denom = "all", show_totals = TRUE)
+gss16 %>% crosstab(whtbaprot, whtevan) %>% adorn_crosstab(denom = "all", show_totals = TRUE)
+
+cces08 %>% crosstab(whtbaprot, whtevan) %>% adorn_crosstab(denom = "all", show_totals = TRUE)
+cces12 %>% crosstab(whtbaprot, whtevan) %>% adorn_crosstab(denom = "all", show_totals = TRUE)
+cces16 %>% crosstab(whtbaprot, whtevan) %>% adorn_crosstab(denom = "all", show_totals = TRUE)
 
 
 
