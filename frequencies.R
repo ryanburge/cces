@@ -1,4 +1,4 @@
-## This is how to make Figure 1 for the POQ Measuring Evangelicals Piece
+dim## This is how to make Figure 1 for the POQ Measuring Evangelicals Piece
 
 ev16 <- filter(cces16, evangelical ==1 & white ==1)
 ##16.5
