@@ -6,7 +6,7 @@ library(extrafont)
 cces16 <- read_dta("D:/cces/data/cces.dta")
 cces12 <- read_dta("D:/cces/data/cces12.dta")
 
-cces16 %>% 
+cces16 %>% filter(religpew ==1 & race ==1 & pew_bornagain ==1) %>% 
   mutate(attend = 7 - pew_churatd) %>% 
   group_by(educ) %>% 
   count(attend) %>% 
@@ -201,5 +201,42 @@ dwplot(cces_reg)  + geom_vline(xintercept = 0, colour = "grey50", linetype = 2) 
                                                caption="Data from the CCES") 
 
 ggsave(file="cces_attnd_dwplot.png", type = "cairo-png", width = 12, height = 12)
+
+
+gss16 %>% 
+  mutate(educ2 = recode(educ, "1:11 =1; 12=2; 13:14=3; 15=4; 16=5; 17:20=6")) %>% 
+  mutate(att = recode(attend, "8=6; 6:7=5; 4:5=4; 3=3; 2=2; 1=1; 0=0")) %>% 
+  group_by(educ2) %>% 
+  count(att) %>% 
+  na.omit() %>% 
+  mutate(weight = prop.table(n))  %>% 
+  filter(att >0) %>% 
+  filter(educ2 >0) %>% 
+  mutate(ed = factor(educ2), attend = factor(att)) %>% 
+  mutate(attend = recode(attend, "0= 'Do not Know';
+                         1= 'Never';
+                         2= 'Seldom';
+                         3= 'Yearly';
+                         4= 'Monthly';
+                         5= 'Weekly';
+                         6= 'More than Weekly'")) %>% 
+  mutate(ed = recode(ed, "1= 'Less than HS';
+                     2='HS Grad'; 
+                     3= 'Some College'; 
+                     4= 'Associates'; 
+                     5= 'Bachelors';
+                     6= 'Graduate'")) %>% 
+  ungroup(educ2) %>% 
+  mutate(attend = fct_inorder(attend), ed = fct_inorder(ed)) %>% 
+  ggplot(., aes(x=ed, y = weight, fill = attend)) + geom_col(position = "dodge") +  
+  theme(axis.title.y = element_blank()) + 
+  ylab("Percent of Votes Cast") + xlab("Level of Education") +
+  theme(legend.position="bottom") +
+  ggtitle("Educational Level and Church Attendance") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=28, family="KerkisSans"))  + 
+  scale_y_continuous(labels = scales::percent) + theme(legend.title=element_blank()) + labs(caption = "Data from GSS 2016")
+
+ggsave(file="educ_attend_gss.png", type = "cairo-png", width = 20, height =12)
 
 
