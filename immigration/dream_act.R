@@ -226,7 +226,7 @@ race$race <- factor(race$race , levels=unique(race$race ))
 ggplot(race,aes(x=race, y=pct)) + 
   geom_col(fill = "cornflowerblue",  color = "black") + 
   # scale_fill_manual(values = Palette) +
-  labs(x="Church Attendance", y="Percentage of Respondents", title="Born Again Protestants and the Dream Act", caption="Data from CCES 2016") + 
+  labs(x="Race of Respondent", y="Percentage of Respondents", title="Born Again Protestants and the Dream Act", caption="Data from CCES 2016") + 
   theme(legend.position="bottom") + labs(fill="") +
   scale_y_continuous(labels = scales::percent) +
   theme(plot.title = element_text(hjust = 0.5)) + 
