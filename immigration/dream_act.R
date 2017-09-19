@@ -45,7 +45,7 @@ cces16 <-  trad %>% mutate(reltrad = recode(reltrad, "'muslim'= 'Muslim';
 
 path <- cces16 %>% group_by(reltrad) %>% count(pathway = CC16_331_1) %>% mutate(pct = prop.table(n)) %>% filter(pathway ==1) %>% select(reltrad, pct)
 border <- cces16 %>% group_by(reltrad) %>% count(border = CC16_331_2) %>% mutate(pct = prop.table(n)) %>% filter(border ==1) %>% select(reltrad, pct)
-dream <- cces16 %>% group_by(reltrad) %>% count(dream = CC16_331_3) %>% mutate(pct = prop.table(n)) %>% filter(dream ==2) %>% select(reltrad, pct)
+dream <- cces16 %>% group_by(reltrad) %>% count(dream = CC16_331_3) %>% mutate(pct = prop.table(n)) %>% filter(dream ==1) %>% select(reltrad, pct)
 deport <- cces16 %>% group_by(reltrad) %>% count(deport = CC16_331_7) %>% mutate(pct = prop.table(n)) %>% filter(deport ==1) %>% select(reltrad, pct)
 
 
@@ -200,4 +200,37 @@ ggplot(attdream,aes(x=fct_rev(attend), y=pct)) +
   theme(text=element_text(size=40, family="KerkisSans"))
 
 ggsave(file="D://cces/immigration/dreamer_facet_by_attend.png", type = "cairo-png", width = 15, height = 12)
+
+
+race <- cces16 %>% filter(pew_bornagain ==1) %>%
+  filter(religpew ==1) %>% 
+  group_by(race) %>% 
+  count(dream = CC16_331_1) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  filter(dream ==1) %>% 
+  ungroup(race) %>% 
+  mutate(race = as.numeric(race)) %>% 
+  filter(race <=8) %>% 
+ mutate(race = recode(race, "1= 'White';
+                         2=  'Black';
+                         3= 'Hispanic';
+                         4= 'Asian';
+                         5= 'Native American';
+                         6= 'Mixed';
+                         7= 'Other';
+                         8= 'Middle Eastern'"))
+  
+race$race <- factor(race$race , levels=unique(race$race ))
+
+
+ggplot(race,aes(x=race, y=pct)) + 
+  geom_col(fill = "cornflowerblue",  color = "black") + 
+  # scale_fill_manual(values = Palette) +
+  labs(x="Church Attendance", y="Percentage of Respondents", title="Born Again Protestants and the Dream Act", caption="Data from CCES 2016") + 
+  theme(legend.position="bottom") + labs(fill="") +
+  scale_y_continuous(labels = scales::percent) +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  theme(text=element_text(size=28, family="KerkisSans"))
+
+ggsave(file="D://cces/immigration/dreamer_facet_by_race.png", type = "cairo-png", width = 15, height = 12)
 
