@@ -166,3 +166,38 @@ comb %>%
   theme(text=element_text(size=22, family="KerkisSans")) + facet_grid(.~group)
 
 ggsave(file="D://cces/immigration/dreamer_facet_by_vote.png", type = "cairo-png", width = 15, height = 12)
+
+
+attdream <- cces16 %>% filter(reltrad == "Wht. Evangelical") %>% 
+  group_by(pew_churatd) %>% 
+  count(dream = CC16_331_1) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  filter(dream ==1) %>% 
+  ungroup(pew_churatd) %>% 
+  mutate(attend = as.numeric(pew_churatd)) %>% 
+  filter(attend <=6) %>% 
+  mutate(attend = recode(attend, "1 = 'Weekly+';
+                         2=  'Weekly';
+                         3= 'Monthly';
+                         4= 'Yearly';
+                         5= 'Seldom';
+                         6= 'Never'"))
+  
+
+
+
+attdream$attend <- factor(attdream$attend , levels=unique(attdream$attend ))
+
+Palette <- c("firebrick3", "dodgerblue3")
+
+ggplot(attdream,aes(x=fct_rev(attend), y=pct)) + 
+  geom_col(fill = "cornflowerblue",  color = "black") + 
+ # scale_fill_manual(values = Palette) +
+  labs(x="Church Attendance", y="Percentage of Respondents", title="White Evangelicals and the Dream Act", caption="Data from CCES 2016") + 
+  theme(legend.position="bottom") + labs(fill="") +
+  scale_y_continuous(labels = scales::percent) +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  theme(text=element_text(size=40, family="KerkisSans"))
+
+ggsave(file="D://cces/immigration/dreamer_facet_by_attend.png", type = "cairo-png", width = 15, height = 12)
+
