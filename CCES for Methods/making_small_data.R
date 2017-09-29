@@ -11,3 +11,10 @@ small <- cces16 %>%
 
 
 small <- read_csv("D://cces/small_cces.csv")
+
+
+small <- read_csv("C://cces/small_cces.csv")
+
+small <- small %>% rename(attend = pew_churatd)
+
+write.csv(small, "small_cces.csv")
