@@ -13,7 +13,7 @@ cc <- cc %>%  mutate(treated = recode(V211, "1=1; else=0"))
 match <- cc %>% mutate(age = 2017 - V207, educ= V213, income= V246, attend= V217, male = V208, imp = V216, pray = V217, pid = CC307a, vote08 = CC410) %>% 
   select(treated, age, educ, income, attend, male, imp, pray, pid, vote08)
 
-match <- match %>% mutate(age = recode(age, "18:35 =.25; 36:44=.5; 45:64=.75; 65:100=1")) %>% 
+match <- match %>% mutate(age = recode(age, "18:35 =.25; 36:44=.5; 45:64=.75; 65:110=1")) %>% 
   mutate(educ = recode(educ, "1:2=.33; 3:4=.66; 5:6=1; else=0")) %>% 
   mutate(income = recode(income, "1:5=.33; 6:10=.66; 11:14=1; 15:99=0")) %>% 
   mutate(attend = recode(attend, "1:2=1; 3:4=.66; 5:7=.33; else=0")) %>% 
@@ -32,13 +32,20 @@ mat <- cem(treatment = "treated", data = match, drop = "mccain", keep.all = TRUE
 
 est <- att(mat, mccain ~ treated + age + educ + income + attend + male + imp + pray + pid, data = match)
 
+reg08 <- glm(mccain ~ treated + age + educ + income + attend + male + imp + pray + pid, data = match)
+reg08 <- tidy(reg08) %>% mutate(year = c(2008)) 
+
 treg <- as.data.frame(t(est$att.model))
 treg$term <- rownames(treg)
 rownames(treg) <- NULL
 
-treg <- treg %>% clean_names()
-write.csv(treg, "treg08.csv")
-treg <- read_csv("D://cces/matching/treg08.csv")
+
+# write.csv(treg, "D:/cces/matching/treg08.csv")
+
+
+treg <- read_csv("D:/cces/matching/treg08.csv")
+
+treg08 <- treg %>% mutate(model = c(2008)) %>% select(-X6)
 
 
 dwplot(treg, dodge_size = .05, show_intercept = FALSE) +

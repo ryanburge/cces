@@ -34,9 +34,22 @@ mat <- cem(treatment = "treated", data = match, drop = "romney", keep.all = TRUE
 
 est <- att(mat, romney ~ treated + age + educ + income + attend + male + imp + pray + pid, data = match)
 
+reg12 <- glm(romney ~ treated + age + educ + income + attend + male + imp + pray + pid, data = match)
+reg12 <- tidy(reg12) %>% mutate(year = c(2012)) 
+
 treg <- as.data.frame(t(est$att.model))
 treg$term <- rownames(treg)
 rownames(treg) <- NULL
+
+
+# write.csv(treg, "D:/cces/matching/treg12.csv")
+
+
+treg <- read_csv("D:/cces/matching/treg12.csv")
+
+treg12 <- treg %>% mutate(model = c(2012)) %>% select(-X6)
+
+
 
 treg <- treg %>% clean_names()
 write.csv(treg, "treg12.csv")

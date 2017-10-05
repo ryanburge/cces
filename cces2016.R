@@ -1,4 +1,10 @@
-cces16 <- read_dta("C:/Users/Ryan Burge/Desktop/cces.dta")
+
+
+library(haven)
+
+system.time(cces16 <- read_dta("D://cces/data/cces16.dta") %>% select(religpew, race))
+
+cces16 <- read_dta("D://cces/data/cces16.dta") %>% select(religpew, race)
 
 
 cces16$white <- Recode(cces16$race, "1=1; else=0")

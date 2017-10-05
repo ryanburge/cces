@@ -29,6 +29,10 @@ mat <- cem(treatment = "treated", data = match, drop = "trump", keep.all = TRUE)
 
 est <- att(mat, trump ~ treated + age + educ + income + attend + male + imp + pray + pid, data = match)
 
+reg16 <- glm(trump ~ treated + age + educ + income + attend + male + imp + pray + pid, data = match)
+reg16 <- tidy(reg16) %>% mutate(year = c(2016)) 
+
+
 treg <- as.data.frame(t(est$att.model))
 treg$term <- rownames(treg)
 rownames(treg) <- NULL
