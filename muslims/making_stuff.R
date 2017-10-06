@@ -54,8 +54,6 @@ vote <- cces16 %>%
 
 vote$vote16 <- factor(vote$vote16, levels=unique(vote$vote16))
 
-
-
 ggplot(vote, aes(1, pct)) + geom_col(aes(fill= fct_rev(vote16)), colour = "black") + coord_flip() + 
   theme(axis.title.y = element_blank()) + 
   theme(axis.ticks = element_blank(), axis.text.y = element_blank()) + ylab("Percent of Votes Cast") + 
@@ -69,6 +67,38 @@ ggplot(vote, aes(1, pct)) + geom_col(aes(fill= fct_rev(vote16)), colour = "black
   theme(plot.title = element_text(face="bold"))
 
 ggsave(file="D:/cces/muslims/votes_graph.png", type = "cairo-png", width = 12, height = 3)
+
+dots <- cces16 %>% group_by(religpew) %>%  
+  filter(pid7 < 8) %>%
+  summarise(mean = mean(pid7),
+            sd = sd(pid7), 
+            n = n()) %>% 
+  mutate(se = sd/sqrt(n),
+         lower = mean - qt(1 - (0.05 /2),  n -1) * se,
+         upper = mean + qt(1 - (0.05 /2),  n -1) * se) %>% 
+  mutate(religpew = to_factor(religpew)) %>% 
+  mutate(label = c("PID"))
+
+pd <- position_dodge(width = 0.15)
+
+dots %>% 
+  filter(religpew != "Skipped") %>% filter(religpew != "Eastern or Greek Orthodox") %>% 
+  ggplot(., aes(x = mean, y = reorder(religpew, mean)))  +
+  geom_point(shape=21, size =4, aes(fill = factor(religpew))) +  
+  geom_errorbarh(aes(xmin = lower, xmax=upper), height=.25, size = 1) + 
+  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") + 
+  #scale_fill_manual(values = c("firebrick1", "black","#53B400", "#00C094", "#FB61D7", "#A58AFF")) + 
+  theme(text=element_text(size=28, family="KerkisSans"))   +  
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Mean Party Identification", y ="", title = "Muslims Are the Most Liberal Religious Group", caption = "Data: CCES 2016", subtitle = "95% Confidence Intervals") +
+  scale_x_continuous(limits = c(2,5.5), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Democrat", "Not Strong Democrat", "Lean Dem.", "Independent", "Lean Republican", "Moderate Republican", "Strong Republican")) + 
+  theme(legend.position="none")
+# geom_text_repel(aes(x=mean, y=label, label= religpew) , hjust = 0, nudge_x = -0.075, nudge_y = .025, family = "KerkisSans", fontface = "bold", size =6, force = 2, max.iter = 3e3)
+
+ggsave(file="D:/cces/muslims/stacked_dot_pid_cis.png", type = "cairo-png", width = 18, height = 12)
+
 
 type <- cces16 %>% 
   filter(religpew_muslim != 98) %>% 
