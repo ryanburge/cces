@@ -16,12 +16,12 @@ gen <- cces16 %>%
   filter(relig != "Something Else" | relig != "Eastern or Greek Orthodox" | relig != "Skipped") %>% 
   count(relig, wt = commonweight_vv) %>% 
   mutate(pct = prop.table(n))
+# 
+# gen <- gen[-4,]
+# gen <- gen[-11,]
+# gen <- gen[-11,]
 
-gen <- gen[-4,]
-gen <- gen[-11,]
-gen <- gen[-11,]
-
-gen <- gen %>% mutate(newpct = n/60449.7) %>% select(relig, newpct) %>% rename(pct = newpct)
+gen <- gen %>% mutate(newpct = n/60449.7) %>% select(relig, newpct) %>% rename(pct = newpct) %>% mutate(pct = round(pct, digits =3))
 
 gen %>% 
   ggplot(., aes(x=reorder(relig, pct), y=pct)) + geom_col(fill = "darkolivegreen4", color = "black") + coord_flip()  +
@@ -29,9 +29,10 @@ gen %>%
   theme(plot.title = element_text(hjust = 0.5))  +
   theme(text=element_text(size=32, family="KerkisSans")) +  
   scale_y_continuous(labels = scales::percent)  +
-  theme(plot.title = element_text(face="bold"))
-
-ggsave(file="D:/cces/muslims/bar_graph.png", type = "cairo-png", width = 15, height = 12)
+  theme(plot.title = element_text(face="bold")) +
+  geom_text(aes(x=relig, y=pct, label= paste0(pct*100,"%")), hjust = 0, nudge_x = 0.05, nudge_y = .0025, family = "KerkisSans", fontface = "bold", size =8) 
+               
+ggsave(file="D:/cces/muslims/bar_graph.png", type = "cairo-png", width = 17, height = 12)
 
 cces16$CC16_410a <- as.numeric(cces16$CC16_410a)
 cces16$vote16<-Recode(cces16$CC16_410a,"1='Donald Trump';
@@ -132,3 +133,23 @@ cces16 %>%
 # 23                        Skipped        Not Sure 0.002829109
 # 24                        Skipped        Not Vote 0.001354232
 # 25                        Skipped           Other 0.017404672
+
+
+
+
+imm <- cces16 %>% 
+  filter(religpew == 6) %>% 
+  count(immstat, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  filter(immstat !=8) %>% 
+  mutate(immstat = to_factor(immstat)) 
+
+imm %>% 
+  ggplot(., aes(x=immstat, y= pct)) + geom_col(fill = "darkolivegreen4", color = "black") +
+  labs(x = "Immigration Status", y = "Percentage of the Muslim Population", title = "Nearly Half the Muslims in the Sample are Immigrants", caption = "Data: CCES 2016") +
+  theme(plot.title = element_text(hjust = 0.5))  +
+  theme(text=element_text(size=32, family="KerkisSans")) +  
+  scale_y_continuous(labels = scales::percent)  +
+  theme(plot.title = element_text(face="bold")) 
+
+ggsave(file="D:/cces/muslims/immigration_bar_graph.png", type = "cairo-png", width = 17, height = 12)
