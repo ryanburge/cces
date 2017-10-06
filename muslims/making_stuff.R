@@ -71,16 +71,17 @@ ggsave(file="D:/cces/muslims/votes_graph.png", type = "cairo-png", width = 12, h
 
 type <- cces16 %>% 
   filter(religpew_muslim != 98) %>% 
-  tabyl(religpew_muslim) %>% 
+  count(religpew_muslim, wt =  commonweight_vv) %>% 
   rename(muslim = religpew_muslim) %>% 
   mutate(muslim = to_factor(muslim))
 
- # type
-# muslim   n   percent
-# 1                          Sunni 289 0.6135881
-# 2                           Shia  45 0.0955414
-# 3 Nation of Islam (Black Muslim)  78 0.1656051
-# 4                   Other Muslim  59 0.1252654
+# # A tibble: 4 x 2
+# muslim         n
+# <fctr>     <dbl>
+#   1                          Sunni 315.87285
+# 2                           Shia  49.41209
+# 3 Nation of Islam (Black Muslim)  96.75191
+# 4                   Other Muslim  53.70877
 
 type %>% 
   mutate(muslim = recode(muslim, "'Nation of Islam (Black Muslim)' = 'Nation of Islam'")) %>% 
