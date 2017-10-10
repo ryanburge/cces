@@ -92,12 +92,43 @@ dots %>%
   theme(text=element_text(size=28, family="KerkisSans"))   +  
   theme(plot.title = element_text(hjust = 0.5)) +
   theme(plot.subtitle = element_text(hjust = 0.5)) +
-  labs(x = "Mean Party Identification", y ="", title = "Muslims Are the Most Liberal Religious Group", caption = "Data: CCES 2016", subtitle = "95% Confidence Intervals") +
+  labs(x = "Mean Party Identification", y ="", title = "Muslims Are the Most Democratic Religious Group", caption = "Data: CCES 2016", subtitle = "95% Confidence Intervals") +
   scale_x_continuous(limits = c(2,5.5), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Democrat", "Not Strong Democrat", "Lean Dem.", "Independent", "Lean Republican", "Moderate Republican", "Strong Republican")) + 
   theme(legend.position="none")
 # geom_text_repel(aes(x=mean, y=label, label= religpew) , hjust = 0, nudge_x = -0.075, nudge_y = .025, family = "KerkisSans", fontface = "bold", size =6, force = 2, max.iter = 3e3)
 
 ggsave(file="D:/cces/muslims/stacked_dot_pid_cis.png", type = "cairo-png", width = 18, height = 12)
+
+
+
+d1 <- cces16 %>% group_by(religpew_muslim) %>%  
+  filter(pid7 < 8) %>%
+  filter(religpew_muslim != 98) %>% 
+  summarise(mean = mean(pid7),
+            sd = sd(pid7), 
+            n = n()) %>% 
+  mutate(se = sd/sqrt(n),
+         lower = mean - qt(1 - (0.05 /2),  n -1) * se,
+         upper = mean + qt(1 - (0.05 /2),  n -1) * se) %>% 
+  mutate(muslim = to_factor(religpew_muslim)) %>% 
+  mutate(label = c("PID"))
+
+d1 %>% 
+  ggplot(., aes(x = mean, y = reorder(muslim, mean)))  +
+  geom_point(shape=21, size =4, aes(fill = factor(muslim))) +  
+  geom_errorbarh(aes(xmin = lower, xmax=upper), height=.25, size = 1) + 
+  theme(legend.title=element_blank()) +
+  theme(legend.position = "bottom") + 
+  #scale_fill_manual(values = c("firebrick1", "black","#53B400", "#00C094", "#FB61D7", "#A58AFF")) + 
+  theme(text=element_text(size=28, family="KerkisSans"))   +  
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.subtitle = element_text(hjust = 0.5)) +
+  labs(x = "Mean Party Identification", y ="", title = "Muslims Are the Most Democratic Religious Group", caption = "Data: CCES 2016", subtitle = "95% Confidence Intervals") +
+  scale_x_continuous(limits = c(1.85,5.5), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Democrat", "Not Strong Democrat", "Lean Dem.", "Independent", "Lean Republican", "Moderate Republican", "Strong Republican")) + 
+  theme(legend.position="none")
+# geom_text_repel(aes(x=mean, y=label, label= religpew) , hjust = 0, nudge_x = -0.075, nudge_y = .025, family = "KerkisSans", fontface = "bold", size =6, force = 2, max.iter = 3e3)
+
+ggsave(file="D:/cces/muslims/muslim_types_stacked_dot_pid_cis.png", type = "cairo-png", width = 18, height = 12)
 
 
 type <- cces16 %>% 
