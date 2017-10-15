@@ -1,7 +1,55 @@
+library(tidyverse)
+library(car)
+library(haven)
+
+cces16 <- read_dta("D://cces/data/cces16.dta")
+
+
+cces16$CC16_410a <- as.numeric(cces16$CC16_410a)
+cces16$vote16<-Recode(cces16$CC16_410a,"1='Trump';
+                    2='Clinton';
+                    3='Johnson';
+                    4='Stein';
+                    5= 'Other';
+                    6= 'Not Vote';
+                    7= 'Not Sure';
+                    8= 'McMullin'; else = NA")
+
+
+vote <- cces16 %>% 
+  mutate(age = 2017 - birthyr) %>% 
+  mutate(age2 = recode(age, "1:35 =1 ; else =0")) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
+  filter(complete.cases(vote16)) %>% 
+  group_by(age2) %>%
+  count(vote16, wt = commonweight_vv_post) %>% 
+  mutate(weight = prop.table(n)) %>% 
+  ungroup(age2) %>% 
+  mutate(age2 = as.numeric(age2)) %>% 
+  mutate(age2 = recode(age2, "1 = 'Under 35';
+                       0= 'Over 35'")) 
+
+vote$age2_f <- factor(vote$age2, levels = c('Under 35', 'Over 35'))
+ 
+
+ggplot(vote, aes(x=reorder(vote16, -weight), y = weight)) + geom_col(aes(fill= vote16), colour = "black") + 
+  theme(axis.title.y = element_blank())  + 
+  labs(x= "Vote Choice in 2016", y="Percent of Votes Cast", title = "White, Born Again Protestants - Millennial vs. All Other Ages") + 
+  theme(legend.position="bottom") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(text=element_text(size=18, family="KerkisSans")) + 
+  scale_fill_manual(values=c("dodgerblue3", "goldenrod1", "darkgrey",  "pink",  "gray", "purple",  "forestgreen", "firebrick1")) +  
+  # scale_fill_manual(values=c("firebrick1", "darkgrey", "goldenrod1", "dodgerblue3", "forestgreen",  "gray", "pink", "purple")) +  
+  guides(fill = guide_legend(reverse = TRUE)) + labs(fill="") + facet_grid(. ~ age2_f)  + theme(legend.position="none")  +  
+  scale_y_continuous(labels = scales::percent)
+
+ggsave(file="vote16_millennials.png", type = "cairo-png", width = 15, height = 10)
+
+
 cces16 %>% 
   mutate(age = 2017 - birthyr) %>% 
   mutate(age2 = recode(age, "1:35 =1 ; else =0")) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
   filter(complete.cases(CC16_332a)) %>% 
   group_by(age2) %>%
   count(CC16_332a, wt = commonweight_post) %>% 
@@ -18,13 +66,12 @@ cces16 %>%
   select(age2, abort, weight) 
 
 
-
 abunder <- cces16 %>% 
   mutate(age = 2017 - birthyr) %>% 
   filter(age <= 35) %>% 
   filter(CC16_410a <=2) %>% 
   group_by(CC16_410a) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
   filter(complete.cases(CC16_332a)) %>% 
   count(CC16_332a, wt = commonweight_post) %>% 
   mutate(weight = prop.table(n)) %>% 
@@ -42,7 +89,7 @@ abover <- cces16 %>%
   filter(age > 35) %>% 
   filter(CC16_410a <=2) %>% 
   group_by(CC16_410a) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>%
   filter(complete.cases(CC16_332a)) %>% 
   count(CC16_332a, wt = commonweight_post) %>% 
   mutate(weight = prop.table(n)) %>% 
@@ -60,7 +107,7 @@ abort <- bind_rows(abunder, abover)
 cces16 %>% 
   mutate(age = 2017 - birthyr) %>% 
   mutate(age2 = recode(age, "1:35 =1 ; else =0")) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
   filter(complete.cases(CC16_335)) %>% 
   group_by(age2) %>% 
   mutate(gay = as.numeric(CC16_335)) %>% 
@@ -84,7 +131,7 @@ gayunder <- cces16 %>%
   filter(age <= 35) %>% 
   filter(CC16_410a <=2) %>% 
   group_by(CC16_410a) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
   filter(complete.cases(CC16_335)) %>% 
   count(CC16_335, wt = commonweight_post) %>% 
   mutate(weight = prop.table(n)) %>% 
@@ -102,7 +149,7 @@ gayover <- cces16 %>%
   filter(age > 35) %>% 
   filter(CC16_410a <=2) %>% 
   group_by(CC16_410a) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
   filter(complete.cases(CC16_335)) %>% 
   count(CC16_335, wt = commonweight_post) %>% 
   mutate(weight = prop.table(n)) %>% 
@@ -123,7 +170,7 @@ gay <- bind_rows(gayunder, gayover)
 ab <- cces16 %>% 
   mutate(age = 2017 - birthyr) %>% 
   mutate(age2 = recode(age, "1:35 =1 ; else =0")) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
   filter(complete.cases(CC16_332a)) %>% 
   group_by(age2) %>%
   count(CC16_332a, wt = commonweight_post) %>% 
@@ -143,7 +190,7 @@ ab <- cces16 %>%
 gay <- cces16 %>% 
   mutate(age = 2017 - birthyr) %>% 
   mutate(age2 = recode(age, "1:35 =1 ; else =0")) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
   filter(complete.cases(CC16_335)) %>% 
   group_by(age2) %>% 
   mutate(gay = as.numeric(CC16_335)) %>% 
@@ -178,7 +225,7 @@ ab <- cces16 %>%
   mutate(age2 = recode(age, "1:35 =1 ; else =0")) %>% 
   mutate(vote = recode(CC16_410a, "1=1; 2=2; else=0")) %>% 
   filter(vote >0) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>%  
   filter(complete.cases(CC16_332a)) %>% 
   group_by(age2, vote) %>%
   count(CC16_332a, wt = commonweight_post) %>% 
@@ -200,7 +247,7 @@ gay <- cces16 %>%
   mutate(age2 = recode(age, "1:35 =1 ; else =0")) %>% 
   mutate(vote = recode(CC16_410a, "1=1; 2=2; else=0")) %>% 
   filter(vote >0) %>% 
-  filter(race ==1 & evangelical ==1) %>% 
+  filter(race ==1 & pew_bornagain ==1 & religpew ==1) %>% 
   filter(complete.cases(CC16_335)) %>% 
   group_by(age2, vote) %>% 
   count(CC16_335, wt = commonweight_post) %>% 

@@ -16,7 +16,7 @@ gen <- cces16 %>%
   filter(relig != "Something Else" | relig != "Eastern or Greek Orthodox" | relig != "Skipped") %>% 
   count(relig, wt = commonweight_vv) %>% 
   mutate(pct = prop.table(n))
-# 
+# Z
 # gen <- gen[-4,]
 # gen <- gen[-11,]
 # gen <- gen[-11,]
