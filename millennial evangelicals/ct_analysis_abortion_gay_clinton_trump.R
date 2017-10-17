@@ -27,23 +27,28 @@ vote <- cces16 %>%
   ungroup(age2) %>% 
   mutate(age2 = as.numeric(age2)) %>% 
   mutate(age2 = recode(age2, "1 = 'Under 35';
-                       0= 'Over 35'")) 
+                       0= 'Over 35'")) %>% 
+  mutate(vote16 = as_factor(vote16))
 
 vote$age2_f <- factor(vote$age2, levels = c('Under 35', 'Over 35'))
- 
+vote$vote16 <- fct_relevel(vote$vote16, "Trump", "Clinton", "Johnson", "Other", "McMullin", "Stein", "Not Vote", "Not Sure")
 
-ggplot(vote, aes(x=reorder(vote16, -weight), y = weight)) + geom_col(aes(fill= vote16), colour = "black") + 
+vote %>% 
+  filter(weight > .01) %>% 
+  ggplot(., aes(1, weight)) + geom_col(aes(fill= fct_rev(vote16)), colour = "black") + coord_flip() +
   theme(axis.title.y = element_blank())  + 
+  theme(axis.ticks = element_blank(), axis.text.y = element_blank()) +
   labs(x= "Vote Choice in 2016", y="Percent of Votes Cast", title = "White, Born Again Protestants - Millennial vs. All Other Ages") + 
   theme(legend.position="bottom") +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme(text=element_text(size=18, family="KerkisSans")) + 
-  scale_fill_manual(values=c("dodgerblue3", "goldenrod1", "darkgrey",  "pink",  "gray", "purple",  "forestgreen", "firebrick1")) +  
+  scale_fill_manual(values=c( "darkgrey","purple", "goldenrod1", "dodgerblue3", "firebrick1")) +  
   # scale_fill_manual(values=c("firebrick1", "darkgrey", "goldenrod1", "dodgerblue3", "forestgreen",  "gray", "pink", "purple")) +  
-  guides(fill = guide_legend(reverse = TRUE)) + labs(fill="") + facet_grid(. ~ age2_f)  + theme(legend.position="none")  +  
-  scale_y_continuous(labels = scales::percent)
+  guides(fill = guide_legend(reverse = TRUE)) + labs(fill="") + facet_grid(age2_f ~ .)  +  
+  scale_y_continuous(labels = scales::percent) +  
+  theme(plot.title = element_text(face="bold")) 
 
-ggsave(file="vote16_millennials.png", type = "cairo-png", width = 15, height = 10)
+ggsave(file="vote16_millennials.png", type = "cairo-png", width = 15, height = 6)
 
 
 cces16 %>% 

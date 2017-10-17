@@ -40,7 +40,7 @@ abunder1 <- cces16 %>%
   mutate(abort = as.numeric(CC16_332a)) %>% 
   mutate(abort = recode(abort, "1= 'Pro-Choice';
                         2= 'Pro-Life'")) %>% 
-  mutate(age = c("Under 35"), sample = c("Entire Sample")) %>% 
+  mutate(age = c("Under 35"), sample = c("Entire White Sample")) %>% 
   filter(abort != "8") %>% 
   select(abort, weight, age, sample)
 
@@ -55,7 +55,7 @@ abover1 <- cces16 %>%
   mutate(abort = as.numeric(CC16_332a)) %>% 
   mutate(abort = recode(abort, "1= 'Pro-Choice';
                         2= 'Pro-Life'")) %>% 
-  mutate(age = c("Over 35"), sample = c("Entire Sample")) %>% 
+  mutate(age = c("Over 35"), sample = c("Entire White Sample")) %>% 
   filter(abort != "8") %>% 
   select(abort, weight, age, sample)
 
@@ -64,8 +64,8 @@ abort <- bind_rows(abunder, abover, abunder1, abover1)
 abort %>% 
   filter(abort == "Pro-Choice") %>% 
   ggplot(., aes(x=abort, y=weight, fill = fct_rev(age))) + 
-  geom_col(position = "dodge", color = "black") +
-  facet_grid(.~sample) +
+  geom_col( color = "black", width = .85, position = position_dodge(width=.95)) +
+  facet_wrap(~ sample, ncol = 2) +
   labs(x= "View of Abortion", y="Percent of Sample", title = "White, Born Again Protestants - Millennial vs. All Other Ages") + 
   theme(legend.position="bottom") +
   theme(plot.title = element_text(hjust = 0.5)) +
@@ -76,7 +76,6 @@ abort %>%
   theme(plot.title = element_text(face="bold")) + theme(legend.title=element_blank())
 
 ggsave(file="abort_millennials.png", type = "cairo-png", width = 12, height = 12)
-
 
 
 
