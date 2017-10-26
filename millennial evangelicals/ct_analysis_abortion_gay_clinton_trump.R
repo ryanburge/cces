@@ -41,7 +41,7 @@ vote %>%
   labs(x= "Vote Choice in 2016", y="Percent of Votes Cast", title = "White, Born Again Protestants - Millennial vs. All Other Ages") + 
   theme(legend.position="bottom") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=18, family="KerkisSans")) + 
+  theme(text=element_text(size=28, family="KerkisSans")) + 
   scale_fill_manual(values=c( "darkgrey","purple", "goldenrod1", "dodgerblue3", "firebrick1")) +  
   # scale_fill_manual(values=c("firebrick1", "darkgrey", "goldenrod1", "dodgerblue3", "forestgreen",  "gray", "pink", "purple")) +  
   guides(fill = guide_legend(reverse = TRUE)) + labs(fill="") + facet_grid(age2_f ~ .)  +  

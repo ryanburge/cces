@@ -69,7 +69,7 @@ abort %>%
   labs(x= "View of Abortion", y="Percent of Sample", title = "White, Born Again Protestants - Millennial vs. All Other Ages") + 
   theme(legend.position="bottom") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=18, family="KerkisSans")) + 
+  theme(text=element_text(size=28, family="KerkisSans")) + 
   scale_fill_brewer(palette = "Dark2") +
   # scale_fill_manual(values=c( "darkgrey","purple", "goldenrod1", "dodgerblue3", "firebrick1")) +
   scale_y_continuous(labels = scales::percent) +  
