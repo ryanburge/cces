@@ -2,6 +2,8 @@ library(tidyverse)
 library(car)
 library(haven)
 library(janitor)
+library(extrafont)
+
 
 cces16 <- read_dta("D://cces/data/cces16.dta")
 
