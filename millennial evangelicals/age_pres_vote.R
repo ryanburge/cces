@@ -534,16 +534,18 @@ new <- new %>% mutate(type = as_factor(type))
 
 
 ggplot(new, aes(x=year, y=weight, group = type, fill = fct_rev(type), color = type)) + 
-  geom_line(size = 1.25) + geom_point(colour = "black", size =2, shape =21, stroke =2, show.legend = F) + scale_y_continuous(labels = scales::percent) +
+  geom_line(size = 1.25, show.legend = FALSE) + geom_point(colour = "black", size =2, shape =21, stroke =2, show.legend = F) + scale_y_continuous(labels = scales::percent) +
   labs(x ="Year", y = "% for the Republican Candidate", title = "Are Young Evangelical Protestants Different Politically?", caption = "Data: GSS (1968-2016) + CCES (2016)") + 
   theme(legend.title=element_blank()) +
   theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=24, family="KerkisSans")) +  
+  theme(text=element_text(size=32, family="KerkisSans")) +  
   theme(plot.title = element_text(face="bold")) + 
   theme(legend.position="bottom") + 
   guides(colour = guide_legend(reverse=F)) + 
-  scale_colour_brewer(palette = "Dark2")
-
+  scale_colour_brewer(palette = "Dark2") + 
+  geom_text(data=subset(new, year == 2016),
+            aes(year,weight,label=type), nudge_y = .015, show.legend = FALSE, size = 7)
+ 
 ggsave(file="young_evan_vote.png", type = "cairo-png", width = 15, height = 10)
 
 
