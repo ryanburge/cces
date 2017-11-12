@@ -8,30 +8,30 @@ library(haven)
 
 
 
-cces <- read_dta("C:/Users/Ryan Burge/Desktop/cces.dta")
+cces16 <- read_dta("C:/Users/Ryan Burge/Desktop/cces16.dta")
 
-cces$white <- Recode(cces$race, "1=1; else=0")
+cces16$white <- Recode(cces16$race, "1=1; else=0")
 
 
-cces$black <- Recode(cces$race, "2=1; else=0")
+cces16$black <- Recode(cces16$race, "2=1; else=0")
 
 ## Vote 2016 
 
-cces$vote16 <- cces$CC16_410a
+cces16$vote16 <- cces16$CC16_410a
 
-#cces$vote16 <- as.numeric(cces$vote16)
+#cces16$vote16 <- as.numeric(cces16$vote16)
 
-cces$hiattend <- Recode(cces$pew_churatd, "1:3=1; else=0")
+cces16$hiattend <- Recode(cces16$pew_churatd, "1:3=1; else=0")
 
-cces$repubid <-Recode(cces$pid3, "2=1; else=0")
+cces16$repubid <-Recode(cces16$pid3, "2=1; else=0")
 
-cces$repubid7 <-Recode(cces$pid7, "5:7=1; else=0")
-cces$bagain <- Recode(cces$pew_bornagain, "1=1; else=0")
-cces$newpid <- Recode(cces$pid7, "8=4")
+cces16$repubid7 <-Recode(cces16$pid7, "5:7=1; else=0")
+cces16$bagain <- Recode(cces16$pew_bornagain, "1=1; else=0")
+cces16$newpid <- Recode(cces16$pid7, "8=4")
 
-#cces <- filter(cces, vote16 <=4)
+#cces16 <- filter(cces16, vote16 <=4)
 
-cces$vote16<-Recode(cces$vote16,"1='Donald Trump';
+cces16$vote16<-Recode(cces16$vote16,"1='Donald Trump';
                     2='Hillary Clinton';
                     3='Gary Johnson';
                     4='Jill Stein';
@@ -40,71 +40,150 @@ cces$vote16<-Recode(cces$vote16,"1='Donald Trump';
                     7= 'Not Sure';
                     8= 'Evan McMullin'; else = NA")
 
-## Evangelical
+## Baptist
 
-cces$evanbaptist <- Recode(cces$religpew_baptist, "1=1; 5:90=1; else=0")
-cces$evanmeth <- Recode(cces$religpew_methodist, "2=1; else=0")
-cces$evannd <- Recode(cces$religpew_nondenom, "1:90=1; else=0")
-cces$evanluth <- Recode(cces$religpew_lutheran, "2:3=1; else=0")
-cces$evanpres <- Recode(cces$religpew_presby, "6=1; else=0")
-cces$pente <- Recode(cces$religpew_pentecost, "1:90=1; else=0")
-cces$evanchrist <- Recode(cces$religpew_christian, "1=1; 3:4=1; else=0")
-cces$evancong <- Recode(cces$religpew_congreg, "2=1; else=0")
-cces$evanholy <- Recode(cces$religpew_holiness, "1:90=1; else=0")
-cces$evanadvent <- Recode(cces$religpew_advent, "1:90=1; else=0")
+cces16 <- cces16 %>%
+  mutate(sbc = recode(cces16$religpew_baptist, "1=1; else=0")) %>% 
+  mutate(sbc = white + sbc) %>% 
+  mutate(sbc = recode(sbc, "2=1; else=0"))
 
-evangelical <- filter(cces, evanbaptist == 1 | evanmeth == 1 | evannd == 1 | evanluth == 1 | evanpres == 1 | pente == 1 | evanchrist == 1 | evancong == 1 | evanholy == 1 | evanadvent ==1)
-evangelical <- filter(evangelical, white ==1)
+cces16 <- cces16 %>%
+  mutate(abc = recode(cces16$religpew_baptist, "2=1; else=0")) %>% 
+  mutate(abc = white + abc) %>% 
+  mutate(abc = recode(abc, "2=1; else=0"))
 
-attendevan <- filter(evangelical, hiattend ==1)
+cces16 <- cces16 %>%
+  mutate(ibc = recode(cces16$religpew_baptist, "5=1; else=0")) 
 
-cces$evangelical <- cces$evanbaptist + cces$evanmeth + cces$evannd + cces$evanluth + cces$evanpres + cces$pente + cces$evanchrist + cces$evancong + cces$evanholy + cces$evanadvent
-cces$evangelical <- Recode(cces$evangelical, "1:4=1; else=0")
+cces16 <- cces16 %>%
+  mutate(bgc = recode(cces16$religpew_baptist, "6=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(mbc = recode(cces16$religpew_baptist, "7=1; else=0")) %>% 
+  mutate(mbc = white + mbc) %>% 
+  mutate(mbc = recode(mbc, "2=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(cb = recode(cces16$religpew_baptist, "8=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(fwb = recode(cces16$religpew_baptist, "9=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(gabb = recode(cces16$religpew_baptist, "10=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(obc = recode(cces16$religpew_baptist, "90=1; else=0")) %>% 
+  mutate(obc = white + obc) %>% 
+  mutate(obc = recode(obc, "2=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(evanbap = sbc + abc + ibc + bgc + mbc + cb + fwb + gabb + obc)
+
+## Methodist
+cces16 <- cces16 %>%
+  mutate(fmc = recode(cces16$religpew_methodist, "2=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(omc = recode(cces16$religpew_methodist, "90=1; else=0")) %>% 
+  mutate(omc = white + omc) %>% 
+  mutate(omc = recode(omc, "2=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(evanmeth = fmc + omc)
+
+##Non-Denom
+
+cces16 <- cces16 %>% 
+  mutate(hiatt = recode(pew_churatd, "1:3=1; else=0")) %>% 
+  mutate(nd = recode(religpew_nondenom, "1:90=1; else=0")) %>% 
+  mutate(evannd = nd + hiatt) %>% 
+  mutate(evannd =  recode(evannd, "2=1; else=0"))
+
+## Lutheran 
+
+cces16 <- cces16 %>% 
+  mutate(mz = recode(religpew_lutheran, "2=1; else=0")) %>% 
+  mutate(wi = recode(religpew_lutheran, "3=1; else=0")) %>% 
+  mutate(evanluth = mz + wi)
+
+## Presbyterian
+
+cces16 <- cces16 %>% 
+  mutate(pca = recode(religpew_presby, "2=1; else=0")) %>% 
+  mutate(epc = recode(religpew_presby, "6=1; else=0")) %>% 
+  mutate(evanpres = pca + epc)
+
+## Pentecostal 
+
+cces16 <- cces16 %>% 
+  mutate(evanpent = recode(religpew_pentecost, "1:90 =1; else=0"))
+
+## Episcopal 
+## None
+
+## Congregregational
+
+cces16 <- cces16 %>% 
+  mutate(evancong = recode(religpew_congreg, "2=1; else=0"))
+
+## Holiness
+cces16 <- cces16 %>% 
+  mutate(evanholy = recode(religpew_holiness, "1:90 =1; else=0"))
+
+## Advent
+## None 
+
+## Totaling Up
+
+cces16 <- cces16 %>% 
+  mutate(evangelical = evanbap + evanmeth + evannd + evanluth + evanpres + evanpent + evancong + evanholy) %>% 
+  mutate(evangelical = recode(evangelical, "1:4=1; else=0"))
 
 
 ## Mainline
 
-cces$mlbaptist <- Recode(cces$religpew_baptist, "2=1; 4=1; else=0")
-cces$mlmeth <- Recode(cces$religpew_methodist, "1=1; 90=1; else=0")
-cces$mlluth <- Recode(cces$religpew_lutheran, "1=1; 4=1; else=0")
-cces$mlpres <- Recode(cces$religpew_presby, "1:5=1; 90=1; else=0")
-cces$mlchrist <- Recode(cces$religpew_christian, "2=1; else=0")
-cces$mlcong <- Recode(cces$religpew_congreg, "1=1; 3=1; else=0")
-cces$mlreform <- Recode(cces$religpew_reformed, "1:90=1; else=0")
-cces$episp <- Recode(cces$religpew_episcop, "1:90=1; else=0")
+cces16$mlbaptist <- Recode(cces16$religpew_baptist, "2=1; 4=1; else=0")
+cces16$mlmeth <- Recode(cces16$religpew_methodist, "1=1; 90=1; else=0")
+cces16$mlluth <- Recode(cces16$religpew_lutheran, "1=1; 4=1; else=0")
+cces16$mlpres <- Recode(cces16$religpew_presby, "1:5=1; 90=1; else=0")
+cces16$mlchrist <- Recode(cces16$religpew_christian, "2=1; else=0")
+cces16$mlcong <- Recode(cces16$religpew_congreg, "1=1; 3=1; else=0")
+cces16$mlreform <- Recode(cces16$religpew_reformed, "1:90=1; else=0")
+cces16$episp <- Recode(cces16$religpew_episcop, "1:90=1; else=0")
 
-cces$mainline <- cces$mlbaptist + cces$mlmeth + cces$mlluth + cces$mlpres + cces$mlchrist + cces$mlcong + cces$mlreform + cces$episp
-cces$mainline <- Recode(cces$mainline, "1:4=1; else=0")
+cces16$mainline <- cces16$mlbaptist + cces16$mlmeth + cces16$mlluth + cces16$mlpres + cces16$mlchrist + cces16$mlcong + cces16$mlreform + cces16$episp
+cces16$mainline <- Recode(cces16$mainline, "1:4=1; else=0")
 
 
 
 ## Black Protestant
 
-bprot <- filter(cces, black ==1 & religpew ==1)
+bprot <- filter(cces16, black ==1 & religpew ==1)
 
 ## Catholic 
-cces$catholic <- Recode(cces$religpew_catholic, "1:90=1; else=0")
+cces16$catholic <- Recode(cces16$religpew_catholic, "1:90=1; else=0")
 
 ## Mormon
-cces$mormon <- Recode(cces$religpew_mormon, "1:90=1; else=0")
+cces16$mormon <- Recode(cces16$religpew_mormon, "1:90=1; else=0")
 
 ## Jewish
-cces$jewish <- Recode(cces$religpew, "5=1; else=0")
+cces16$jewish <- Recode(cces16$religpew, "5=1; else=0")
 
 ## Muslim 
-cces$muslim <- Recode(cces$religpew, "6=1; else=0")
+cces16$muslim <- Recode(cces16$religpew, "6=1; else=0")
 
 ## Buddhist
-cces$buddhist <- Recode(cces$religpew, "7=1; else=0")
+cces16$buddhist <- Recode(cces16$religpew, "7=1; else=0")
 
 ## Hindus
-cces$hindu <- Recode(cces$religpew, "8=1; else=0")
+cces16$hindu <- Recode(cces16$religpew, "8=1; else=0")
 
 ## Atheist
-cces$atheist <- Recode(cces$religpew, "9=1; else=0")
+cces16$atheist <- Recode(cces16$religpew, "9=1; else=0")
 
 ## Agnostic 
-cces$agnostic <- Recode(cces$religpew, "10=1; else=0")
+cces16$agnostic <- Recode(cces16$religpew, "10=1; else=0")
 
 
 ## Evangelical
@@ -122,7 +201,7 @@ evan$tradition <- c("Evangelical")
 
 ## Black Protestant
 
-bprot <- filter(cces, black ==1 & religpew ==1)
+bprot <- filter(cces16, black ==1 & religpew ==1)
 wpct(bprot$vote16, bprot$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
@@ -136,7 +215,7 @@ bprot$tradition <- c("Black Protestant")
 
 ## Mormons 
 
-mormon <- filter(cces, mormon ==1)
+mormon <- filter(cces16, mormon ==1)
 wpct(mormon$CC16_410a, mormon$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Evan McMullin", "Jill Stein")
@@ -149,7 +228,7 @@ mormon$candidate <- factor(mormon$candidate, levels=unique(mormon$candidate))
 mormon$tradition <- c("Mormon")
 
 ## Mainline
-mainline <- filter(cces, mainline ==1)
+mainline <- filter(cces16, mainline ==1)
 wpct(mainline$vote16, mainline$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
@@ -162,7 +241,7 @@ ml$candidate <- factor(ml$candidate, levels=unique(ml$candidate))
 ml$tradition <- c("Mainline")
 
 ## Jewish
-jewish <- filter(cces, jewish ==1)
+jewish <- filter(cces16, jewish ==1)
 wpct(jewish$vote16, jewish$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
@@ -176,7 +255,7 @@ jewish$tradition <- c("Jewish")
 
 
 ## Catholic
-catholic <- filter(cces, catholic ==1)
+catholic <- filter(cces16, catholic ==1)
 wpct(catholic$vote16, catholic$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
@@ -189,7 +268,7 @@ catholic$candidate <- factor(catholic$candidate, levels=unique(catholic$candidat
 catholic$tradition <- c("Catholic")
 
 ## Muslim
-muslim <- filter(cces, muslim ==1)
+muslim <- filter(cces16, muslim ==1)
 wpct(muslim$vote16, muslim$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
@@ -202,7 +281,7 @@ muslim$candidate <- factor(muslim$candidate, levels=unique(muslim$candidate))
 muslim$tradition <- c("Muslim")
 
 ## Atheist
-atheist <- filter(cces, atheist ==1)
+atheist <- filter(cces16, atheist ==1)
 wpct(atheist$vote16, atheist$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
@@ -215,7 +294,7 @@ atheist$candidate <- factor(atheist$candidate, levels=unique(atheist$candidate))
 atheist$tradition <- c("Atheist")
 
 ## Buddhist
-buddhist <- filter(cces, buddhist ==1)
+buddhist <- filter(cces16, buddhist ==1)
 wpct(buddhist$vote16, buddhist$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
@@ -228,7 +307,7 @@ buddhist$candidate <- factor(buddhist$candidate, levels=unique(buddhist$candidat
 buddhist$tradition <- c("Buddhist")
 
 ## Hindu
-hindu <- filter(cces, hindu ==1)
+hindu <- filter(cces16, hindu ==1)
 wpct(hindu$vote16, hindu$commonweight_post)
 
 candidate <- c("Donald Trump", "Hillary Clinton" , "Gary Johnson" , "Jill Stein")
@@ -242,10 +321,10 @@ hindu$tradition <- c("Hindu")
 
 
 ## All In One Graph
-all <- rbind(evan, ml, cath, mormon, jewish, muslim, atheist, buddhist, hindu, bprot)
+all <- rbind(evan, ml, catholic, mormon, jewish, muslim, atheist, buddhist, hindu, bprot)
 
 all$candidate <- factor(all$candidate, levels=unique(all$candidate))
-all$tradition <- factor(all$tradition, levels = c("Evangelical", "Mainline", "Black Protestant", "Mormon", "Catholic", "Jewish", "Muslim", "Hindu", "Buddhist", "Atheist"))
+all$tradition <- factor(all$tradition, levels = c("Evangelical", "Mainline", "Catholic", "Mormon", "Jewish", "Hindu", "Buddhist", "Atheist",  "Muslim","Black Protestant"))
 
 ggplot(all, aes(1, count)) + geom_col(aes(fill= fct_rev(candidate)), colour = "black") + coord_flip() + 
   theme(axis.title.y = element_blank()) + 
@@ -253,9 +332,12 @@ ggplot(all, aes(1, count)) + geom_col(aes(fill= fct_rev(candidate)), colour = "b
   theme(legend.position="bottom") +
   ggtitle("2016 Presidential Election") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=18, family="KerkisSans")) + 
+  theme(text=element_text(size=24, family="KerkisSans")) + 
   scale_fill_manual(values=c("darkgrey", "forestgreen", "goldenrod1", "dodgerblue3", "firebrick1")) +  
   guides(fill = guide_legend(reverse = TRUE)) + labs(fill="") + facet_grid(tradition ~ .)  
+
+ggsave(file="vote16_all_trads.png", type = "cairo-png", width = 15, height = 10)
+
 
 
 ## Just Protestants
@@ -304,6 +386,6 @@ ggplot(non, aes(1, count)) + geom_col(aes(fill= fct_rev(candidate)), colour = "b
   guides(fill = guide_legend(reverse = TRUE)) + labs(fill="") + facet_grid(tradition ~ .)   
 
 
-cces %>%  filter(evangelical ==1 & white ==1 & complete.cases(vote16)) %>% 
+cces16 %>%  filter(evangelical ==1 & white ==1 & complete.cases(vote16)) %>% 
   count(vote16, wt = commonweight_post) %>% 
   mutate(weight = prop.table(n), trad = c("White Evangelical")) %>% arrange(desc(weight))

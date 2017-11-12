@@ -73,7 +73,7 @@ abort %>%
   scale_fill_brewer(palette = "Dark2") +
   # scale_fill_manual(values=c( "darkgrey","purple", "goldenrod1", "dodgerblue3", "firebrick1")) +
   scale_y_continuous(labels = scales::percent) +  
-  theme(plot.title = element_text(face="bold")) + theme(legend.title=element_blank())
+  theme(plot.title = element_text(face="bold")) + theme(legend.title=element_blank()) 
 
 ggsave(file="abort_millennials.png", type = "cairo-png", width = 12, height = 12)
 
