@@ -247,7 +247,7 @@ cces$abort5 <- Recode(cces$CC16_332e, "1=1; else=0") ## Prohibit federal funds f
 cces$abort6 <- Recode(cces$CC16_332f, "1=1; else=0") ## Make abortion illegal in all circumstances
 
 
-rel <- cces %>% select(V101, evangelical, mainline, bprot, catholic, mormon, jewish, muslim, buddhist, hindu, atheist, agnostic, nothing, age)
+rel <- cces %>% select(V101, evangelical, mainline, bprot, catholic, mormon, jewish, muslim, buddhist, hindu, atheist, agnostic, nothing)
 reltrad <- rel %>% gather(reltrad, x1, evangelical:nothing) %>% filter(x1==1) %>% select(V101,reltrad)
 abort <- cces %>% select(V101, abort1:abort6)
 
