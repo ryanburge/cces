@@ -39,8 +39,12 @@ cces16 %>%
   geom_smooth(method = lm, inherit.aes = TRUE) +
    scale_fill_manual(values = Palette) + 
   theme_rb() +
-  annotate("text", label = "Evangelical", x = 3.5, y = 4.65, color = "black") +
-  annotate("text", label = "LGBT Evangelical", x = 3.5, y = 4.1, color = "black") +
-  annotate("text", label = "LGBT", x = 3.5, y = 3.45, color = "black") +
-  labs(x= "Importance of Gay Marriage", y = "Importance of Religion", title = "Relationship between Gay Marriage and Religion Importance")  + theme(legend.position="none")
+  annotate("text", label = "Evangelical", x = 3.5, y = 4.65, color = "black", size =8) +
+  annotate("text", label = "LGBT Evangelical", x = 3.5, y = 4.1, color = "black", size =8) +
+  annotate("text", label = "LGBT", x = 3.5, y = 3.4, color = "black", size =8) +
+  labs(x= "Importance of Gay Marriage", y = "Importance of Religion", title = "Relationship between Gay Marriage and Religion Importance", caption = "Data: CCES 2016")  + 
+  theme(legend.position="none")
+
+ggsave(file="D://cces/gay_evangelical/scatter.png", type = "cairo-png", width = 20, height =12)
+
   
