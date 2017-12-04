@@ -25,10 +25,18 @@ race <- cces16 %>%
   group_by(new) %>% 
   count(race, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n)) %>% 
-  mutate(race = to_factor(race))
+  mutate(race = to_factor(race)) %>% 
+  filter(pct > .05)
 
 cces16 %>% 
   filter(new != "NA") %>% 
   mutate(age = 2017 - birthyr) %>% 
   group_by(new) %>% 
   summarise(mean = mean(age))
+
+cces16 %>% 
+  filter(new != "NA") %>% 
+  filter(faminc < 17) %>% 
+  group_by(new) %>% 
+  summarise(mean = mean(faminc))
+
