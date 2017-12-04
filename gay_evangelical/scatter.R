@@ -42,7 +42,7 @@ cces16 %>%
   annotate("text", label = "Evangelical", x = 3.5, y = 4.65, color = "black", size =8) +
   annotate("text", label = "LGBT Evangelical", x = 3.5, y = 4.1, color = "black", size =8) +
   annotate("text", label = "LGBT", x = 3.5, y = 3.4, color = "black", size =8) +
-  labs(x= "Importance of Gay Marriage", y = "Importance of Religion", title = "Relationship between Gay Marriage and Religion Importance", caption = "Data: CCES 2016")  + 
+  labs(x= "Importance of Gay Marriage", y = "Importance of Religion", title = "Relationship between Gay Marriage and Religion Importance", caption = "Data: CCES 2016", subtitle = "1 = Low Importance, 5 = High Importance")  + 
   theme(legend.position="none")
 
 ggsave(file="D://cces/gay_evangelical/scatter.png", type = "cairo-png", width = 20, height =12)
