@@ -52,4 +52,18 @@ cces16 %>%
   count(gender, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
 
+cces16 <- cces16 %>% 
+  mutate(attend = recode(pew_churatd, "1=6; 2=5; 3=4; 4=3; 5=2; 6=1; else =99"))
+
+cces16 %>% 
+  filter(attend !=99) %>% 
+  # group_by(new) %>% 
+  summarise(mean = mean(attend), 
+                        sd = sd(attend), 
+                        n = n()) %>% 
+              mutate(se = sd/sqrt(n),
+                     lower = mean - qt(1 - (0.05 /2),  n -1) * se,
+                     upper = mean + qt(1 - (0.05 /2),  n -1) * se) 
+
+
 
