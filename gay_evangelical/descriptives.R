@@ -32,11 +32,24 @@ cces16 %>%
   filter(new != "NA") %>% 
   mutate(age = 2017 - birthyr) %>% 
   group_by(new) %>% 
-  summarise(mean = mean(age))
+  summarise(mean = mean(age), 
+            sd = sd(age), 
+            n = n()) %>% 
+  mutate(se = sd/sqrt(n),
+         lower = mean - qt(1 - (0.05 /2),  n -1) * se,
+         upper = mean + qt(1 - (0.05 /2),  n -1) * se) 
 
 cces16 %>% 
   filter(new != "NA") %>% 
   filter(faminc < 17) %>% 
   group_by(new) %>% 
   summarise(mean = mean(faminc))
+
+
+cces16 %>% 
+  filter(new != "NA") %>% 
+  group_by(new) %>% 
+  count(gender, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n))
+
 

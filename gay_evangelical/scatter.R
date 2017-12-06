@@ -1,7 +1,7 @@
 
 cces16 <- cces16 %>% 
   mutate(imp_gay = recode(CC16_301n, "1=5; 2=4; 3=3; 4=2; 5=1; else=99")) %>% 
-  mutate(imp_rel = recode(pew_religimp, "1=5; 2=4; 3=3; 4=2; 5=1; else=99")) %>% 
+  mutate(imp_rel = recode(pew_religimp, "1=4; 2=3; 3=3; 4=2; else=99")) %>% 
   mutate(imp_gay = as.numeric(imp_gay), imp_rel = as.numeric(imp_rel))
 
 
@@ -39,12 +39,12 @@ cces16 %>%
   geom_smooth(method = lm, inherit.aes = TRUE) +
    scale_fill_manual(values = Palette) + 
   theme_rb() +
-  annotate("text", label = "Evangelical", x = 3.5, y = 4.65, color = "black", size =8) +
-  annotate("text", label = "LGBT Evangelical", x = 3.5, y = 4.1, color = "black", size =8) +
-  annotate("text", label = "LGBT", x = 3.5, y = 3.4, color = "black", size =8) +
-  labs(x= "Importance of Gay Marriage", y = "Importance of Religion", title = "Relationship between Gay Marriage and Religion Importance", caption = "Data: CCES 2016", subtitle = "1 = Low Importance, 5 = High Importance")  + 
+  annotate("text", label = "Evangelical", x = 3.5, y = 3.70, color = "black", size =8) +
+  annotate("text", label = "LGBT Evangelical", x = 3.5, y = 3.45, color = "black", size =8) +
+  annotate("text", label = "LGBT", x = 3.5, y = 3, color = "black", size =8) +
+  labs(x= "Importance of Gay Marriage", y = "Importance of Religion", title = "Relationship between Gay Marriage and Religion Importance", caption = "Data: CCES 2016", subtitle = "Higher Values = Greater Importance")  + 
   theme(legend.position="none")
 
-ggsave(file="D://cces/gay_evangelical/scatter.png", type = "cairo-png", width = 20, height =12)
+ggsave(file="D://cces/gay_evangelical/scatter1.png", type = "cairo-png", width = 20, height =12)
 
   
