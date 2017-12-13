@@ -2,6 +2,20 @@
 library(survey)
 library(srvyr)
 
+cs <- cces16 %>% filter(evangelical ==1) %>% 
+  filter(sexuality == 2 | sexuality ==3 | sexuality ==4 | sexuality ==5 | trans ==1) %>% 
+  as_survey_design(weights = commonweight_vv_lgbt)
+
+
+cs %>%
+  # filter(relimp == "High Importance") %>% 
+  summarize(prop  = survey_mean(vote16, na.rm = TRUE, vartype = "ci")) %>% 
+  # mutate(imp = c("High Importance")) %>% 
+  filter(prop > .05) %>% 
+  add_column(candidate = c("Trump", "Clinton"))
+
+
+
 ### Gay Marriage Importance
 
 

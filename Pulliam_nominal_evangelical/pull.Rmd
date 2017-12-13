@@ -1,0 +1,279 @@
+---
+title: "Alabama"
+author: "Ryan Burge"
+date: "December 11, 2017"
+output: html_document
+---
+
+
+```{r message=FALSE, warning=FALSE, echo= FALSE, fig.width= 15}
+
+library(tidyverse)
+library(extrafont)
+library(haven)
+library(car)
+library(janitor)
+library(labelled)
+library(DT)
+
+
+cces16 <- read_dta("D://cces/data/cces16.dta")
+
+
+cces16 <- cces16 %>% 
+  mutate(white = recode(race, "1=1; else=0"))
+
+## Baptist
+
+cces16 <- cces16 %>%
+  mutate(sbc = recode(cces16$religpew_baptist, "1=1; else=0")) %>% 
+  mutate(sbc = white + sbc) %>% 
+  mutate(sbc = recode(sbc, "2=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(abc = recode(cces16$religpew_baptist, "2=1; else=0")) %>% 
+  mutate(abc = white + abc) %>% 
+  mutate(abc = recode(abc, "2=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(ibc = recode(cces16$religpew_baptist, "5=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(bgc = recode(cces16$religpew_baptist, "6=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(mbc = recode(cces16$religpew_baptist, "7=1; else=0")) %>% 
+  mutate(mbc = white + mbc) %>% 
+  mutate(mbc = recode(mbc, "2=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(cb = recode(cces16$religpew_baptist, "8=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(fwb = recode(cces16$religpew_baptist, "9=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(gabb = recode(cces16$religpew_baptist, "10=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(obc = recode(cces16$religpew_baptist, "90=1; else=0")) %>% 
+  mutate(obc = white + obc) %>% 
+  mutate(obc = recode(obc, "2=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(evanbap = sbc + abc + ibc + bgc + mbc + cb + fwb + gabb + obc)
+
+## Methodist
+cces16 <- cces16 %>%
+  mutate(fmc = recode(cces16$religpew_methodist, "2=1; else=0")) 
+
+cces16 <- cces16 %>%
+  mutate(omc = recode(cces16$religpew_methodist, "90=1; else=0")) %>% 
+  mutate(omc = white + omc) %>% 
+  mutate(omc = recode(omc, "2=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(evanmeth = fmc + omc)
+
+##Non-Denom
+
+cces16 <- cces16 %>% 
+  mutate(hiatt = recode(pew_churatd, "1:3=1; else=0")) %>% 
+  mutate(nd = recode(religpew_nondenom, "1:90=1; else=0")) %>% 
+  mutate(evannd = nd + hiatt) %>% 
+  mutate(evannd =  recode(evannd, "2=1; else=0"))
+
+## Lutheran 
+
+cces16 <- cces16 %>% 
+  mutate(mz = recode(religpew_lutheran, "2=1; else=0")) %>% 
+  mutate(wi = recode(religpew_lutheran, "3=1; else=0")) %>% 
+  mutate(evanluth = mz + wi)
+
+## Presbyterian
+
+cces16 <- cces16 %>% 
+  mutate(pca = recode(religpew_presby, "2=1; else=0")) %>% 
+  mutate(epc = recode(religpew_presby, "6=1; else=0")) %>% 
+  mutate(evanpres = pca + epc)
+
+## Pentecostal 
+
+cces16 <- cces16 %>% 
+  mutate(evanpent = recode(religpew_pentecost, "1:90 =1; else=0"))
+
+## Episcopal 
+## None
+
+## Congregregational
+
+cces16 <- cces16 %>% 
+  mutate(evancong = recode(religpew_congreg, "2=1; else=0"))
+
+## Holiness
+cces16 <- cces16 %>% 
+  mutate(evanholy = recode(religpew_holiness, "1:90 =1; else=0"))
+
+## Advent
+## None 
+
+## Totaling Up
+
+cces16 <- cces16 %>% 
+  mutate(evangelical = evanbap + evanmeth + evannd + evanluth + evanpres + evanpent + evancong + evanholy) %>% 
+  mutate(evangelical = recode(evangelical, "1:4=1; else=0"))
+
+e1<- cces16 %>% 
+  group_by(inputstate) %>% 
+  count(evangelical, wt =commonweight_vv) %>% 
+  mutate(group = c("Evangelicals")) %>% 
+  filter(evangelical ==1)
+
+e2<- cces16 %>% 
+   group_by(inputstate) %>% 
+  count(wt =commonweight_vv) %>% 
+  mutate(group = c("Entire Population"))
+
+
+graph <- bind_cols(e1, e2) %>% mutate(pct = n/n1) %>% mutate(state = to_factor(inputstate)) %>% arrange(-pct) %>% head(10)
+
+
+
+theme_rb <- function(base_size = 25, base_family = "IBM Plex Serif") 
+{theme(legend.position = "bottom", 
+       legend.title = element_blank(), 
+       legend.spacing.x = unit(1, "cm"),
+       legend.spacing.y = unit(1, "cm"),
+       panel.background = element_rect(fill = "white"), 
+       panel.grid.major.x =  element_line(colour = "gray48", size = .25), 
+       panel.grid.minor.x =  element_line(colour = "gray48", size = .25, linetype = "dashed"),
+       text = element_text(base_family, size = 18),
+       plot.title = element_text(family = "IBM Plex Serif", size = 32, vjust =2, face = "bold"),
+       plot.subtitle = element_text(family = "IBM Plex Serif", size = 20, vjust =-1),
+       plot.caption = element_text(family = "IBM Plex Serif", size =20),
+       axis.title.x =  element_text(family = "IBM Plex Serif", size =24),
+       axis.title.y =  element_text(family = "IBM Plex Serif", size =24)  
+)
+  
+}
+
+
+
+
+
+graph %>% 
+  ggplot(., aes(x=reorder(state,pct), y= pct)) + geom_col(fill = "firebrick3") + scale_y_continuous(labels = scales::percent) + coord_flip() + theme_rb() +
+  labs(x= "State", y= "Percent of Population that is Evangelical", title = "What States are the Most Evangelical?", caption = "Data: CCES 2016")
+
+
+g1 <- cces16 %>% 
+  group_by(inputstate) %>% 
+  filter(evangelical ==1) %>% 
+  count(CC16_410a, wt = commonweight_vv_post) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  filter(CC16_410a ==1) %>% 
+  arrange(-pct) %>% 
+  mutate(state = to_factor(inputstate)) %>% 
+  head(10)
+
+
+g1 %>% 
+  ggplot(., aes(x=reorder(state,pct), y= pct, fill = state)) + geom_col(fill = "firebrick3") + scale_y_continuous(labels = scales::percent) + coord_flip() + theme_rb() +
+  labs(x= "State", y= "Percent of Evangelical Population that Voted for Trump", title = "What States has the Strongest Trump Evangelicals?", caption = "Data: CCES 2016")
+```
+
+## This is Percent of White Evangelicals Who Say that Abortion is Important, sorted by State
+
+```{r message=FALSE, warning=FALSE, echo= FALSE, fig.width= 15}
+a1 <- cces16 %>% 
+  mutate(abort = recode(CC16_301b, "1:2 =1; 3:5 =2; else =99")) %>% 
+  filter(race ==1 & pew_bornagain==1 & religpew ==1 & abort != 99) %>% 
+  group_by(inputstate) %>% 
+  count(abort, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  filter(abort ==1) %>% 
+  arrange(-pct) %>% 
+  mutate(state = to_factor(inputstate)) %>% 
+  ungroup(inputstate) %>% 
+  select(-inputstate, -abort, -n) %>%  
+  mutate(pct = round(pct*100))
+
+datatable(a1)
+```
+
+
+## This is Percent of White Evangelicals Who Say that Gay Marriage is Important, sorted by State
+
+```{r message=FALSE, warning=FALSE, echo= FALSE, fig.width= 15}
+
+a2 <- cces16 %>% 
+  mutate(gaym = recode(CC16_301n, "1:2 =1; 3:5 =2; else =99")) %>% 
+  filter(race ==1 & pew_bornagain==1 & religpew ==1 & gaym != 99) %>% 
+  group_by(inputstate) %>% 
+  count(gaym, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  filter(gaym ==1) %>% 
+  arrange(-pct) %>% 
+  mutate(state = to_factor(inputstate)) %>% 
+  ungroup(inputstate) %>%
+  select(-inputstate, -gaym, -n) %>% 
+  mutate(pct = round(pct*100))
+
+datatable(a2)
+```
+
+
+## This is Average Party ID of White Evangelicals, sorted by State
+
+```{r message=FALSE, warning=FALSE, echo= FALSE, fig.width= 15, fig.height=15}
+
+pid <- cces16 %>% 
+  filter(race ==1 & pew_bornagain==1 & religpew ==1) %>% 
+  filter(pid7 <8) %>% 
+  group_by(inputstate) %>% 
+  summarise(mean = mean(pid7), 
+            sd = sd(pid7), 
+            n = n()) %>% 
+  mutate(se = sd/sqrt(n),
+         lower = mean - qt(1 - (0.05 /2),  n -1) * se,
+         upper = mean + qt(1 - (0.05 /2),  n -1) * se) %>% 
+  mutate(state = to_factor(inputstate))
+  
+
+
+theme_rb <- function(base_size = 25, base_family = "IBM Plex Serif") 
+{theme(legend.position = "bottom", 
+       legend.title = element_blank(), 
+       legend.spacing.x = unit(1, "cm"),
+       legend.spacing.y = unit(1, "cm"),
+       panel.background = element_rect(fill = "white"), 
+       panel.grid.major.x =  element_line(colour = "gray48", size = .25, linetype = "dashed"), 
+       panel.grid.minor.x =  element_line(colour = "gray48", size = .25),
+       text = element_text(base_family, size = 18),
+       plot.title = element_text(family = "IBM Plex Serif", size = 32, vjust =2, face = "bold"),
+       plot.subtitle = element_text(family = "IBM Plex Serif", size = 20, vjust =-1),
+       plot.caption = element_text(family = "IBM Plex Serif", size =20),
+       axis.title.x =  element_text(family = "IBM Plex Serif", size =24),
+       axis.title.y =  element_text(family = "IBM Plex Serif", size =24)  
+)
+  
+}
+
+
+
+
+pid %>% 
+  # filter(type == "White Mainline") %>% 
+  ggplot(., aes(x = mean, y = reorder(state, -mean)))  +
+  geom_point(shape=21, size =4, aes(fill = factor(state)), show.legend = TRUE) +  
+  geom_errorbarh(aes(xmin = lower, xmax=upper, colour = factor(state)), height=0, size = 1, show.legend = FALSE) + 
+  # scale_color_manual(values = c("firebrick1", "black","#53B400", "#00C094", "#FB61D7", "#A58AFF", "grey", "red", "green")) +
+  labs(x = "Party Identification", y ="", title = "Average Party ID of White Evangelicals", caption = "Data: CCES 2016", subtitle = "95% Confidence Intervals") + theme(axis.text.x=element_text(angle=45, hjust=1)) +
+  scale_x_continuous(limits = c(1,6), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Democrat", "Not Strong Democrat", "Lean Dem.", "Independent", "Lean Republican", "Moderate Republican", "Strong Republican"))  +  theme_rb( ) + theme(legend.position="none")
+  
+```
+
+
+
+
+

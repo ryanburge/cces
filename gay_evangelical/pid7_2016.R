@@ -60,7 +60,7 @@ pid7 %>%
   scale_y_continuous(labels = scales::percent) +
   guides(fill = guide_legend(reverse=FALSE)) +
   scale_fill_manual(values = Palette) +
-  labs(x= "Party Identification", y = "Percent of Each Sample", title = "The Political Ideology of LGBT Evangelicals", caption = "Data: CCES 2016", subtitle = "")+ theme_rb()
+  labs(x= "Party Identification", y = "Percent of Each Sample", title = "The Political Ideology of LGBT Evangelicals", caption = "Data: CCES 2016", subtitle = "Mean Party Identification: Evangelical = 4.6, LGBT = 2.8, LGBT Evangelical = 3.2")+ theme_rb()
 
 ggsave(file="D://cces/gay_evangelical/pid7_2016.png", type = "cairo-png", width = 20, height =12)
 
@@ -274,5 +274,12 @@ gayimp %>%
   labs(x= "Level of Importance", y = "Percent of Each Sample", title = "The Importance of Religion", caption = "Data: CCES 2016", subtitle = "")+ theme_rb()
 
 ggsave(file="D://cces/gay_evangelical/relig_imp_2016.png", type = "cairo-png", width = 20, height =12)
+
+
+cces16 %>% 
+  group_by(new) %>% 
+  # filter(new != NA) %>% 
+  summarise(mean = mean(pid7))
+
 
 

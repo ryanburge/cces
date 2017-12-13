@@ -66,4 +66,53 @@ cces16 %>%
                      upper = mean + qt(1 - (0.05 /2),  n -1) * se) 
 
 
+cces16 %>% filter(evangelical ==1) %>% 
+  filter(attend == 5| attend ==6) %>% 
+  filter(CC16_410a < 10) %>% 
+  count(CC16_410a, wt = commonweight_vv_post) %>% 
+  mutate(pct = prop.table(n))
+
+cces16 %>% filter(evangelical ==1) %>% 
+  filter(attend < 5) %>% 
+  filter(CC16_410a < 10) %>% 
+  count(CC16_410a, wt = commonweight_vv_post) %>% 
+  mutate(pct = prop.table(n))
+
+cces16 %>% filter(evanlgbt ==1) %>% 
+  filter(attend == 5| attend ==6) %>% 
+  filter(CC16_410a < 10) %>% 
+  count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n))
+
+cces16 %>% filter(evanlgbt ==1) %>% 
+  filter(attend < 5) %>% 
+  filter(CC16_410a < 10) %>% 
+  count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n))
+
+cces16 %>% filter(evanlgbt ==1) %>% 
+  filter(attend == 5| attend ==6) %>% 
+  filter(CC16_410a < 10) %>% 
+  count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n))
+
+
+cces16 %>% filter(evanlgbt ==1) %>% 
+  filter(relimp1 == 3| relimp1 ==4) %>% 
+  filter(CC16_410a < 10) %>% 
+  count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n))
+
+cces16 %>% filter(evanlgbt ==1) %>% 
+  filter(relimp1 == 1| relimp1 ==2) %>% 
+  filter(CC16_410a < 10) %>% 
+  count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n))
+
+cces16 %>% filter(evanlgbt ==1) %>% 
+  # filter(relimp1 == 3| relimp1 ==4) %>% 
+  # filter(CC16_410a < 10) %>% 
+  count(relimp1, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n))
+
 
