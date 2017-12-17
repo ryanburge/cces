@@ -1,11 +1,59 @@
 library(tidyverse)
-library(car)
-library(haven)
-library(janitor)
 library(extrafont)
-
+library(haven)
+library(car)
+library(janitor)
+library(labelled)
+source("D://cces/ggthemes.R")
 
 cces16 <- read_dta("D://cces/data/cces16.dta")
+
+
+vote <- cces16 %>% 
+  mutate(race2 = recode(race, "1=1; 3=2; else=0")) %>% 
+  filter(pew_bornagain ==1 & religpew ==1) %>% 
+  mutate(vote16 = as.numeric(CC16_410a)) %>% 
+  mutate(vote16 = Recode(vote16,"1='Trump';
+                         2='Clinton';
+                         3='Johnson';
+                         4='Stein';
+                         5= 'Other';
+                         6= 'Not Vote';
+                         7= 'Not Sure';
+                         8= 'McMullin'; else = NA"))  %>% 
+  filter(complete.cases(vote16)) %>% 
+  filter(race2 !=0) %>% 
+  group_by(race2) %>% 
+  count(vote16, wt = commonweight_vv_post) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  ungroup(race2) %>% 
+  mutate(race2 = as.numeric(race2)) %>% 
+  mutate(race2 = recode(race2, "1= 'White Evangelical'; 2 ='Hispanic Evangelical'"))  
+
+
+
+
+vote$vote16 <- factor(vote$vote16, levels = c("Trump", "Clinton", "Johnson", "Other", "Stein", "McMullin", "Not Vote", "Not Sure"))
+
+
+vote %>% 
+  filter(pct > .0025) %>% 
+  ggplot(., aes(1, pct)) + geom_col(aes(fill= fct_rev(vote16)), colour = "black") + 
+  facet_grid(race2 ~ .)  + 
+  coord_flip() +
+  scale_fill_manual(values=c("darkgrey", "forestgreen", "purple", "goldenrod1", "dodgerblue3", "firebrick1" )) +
+  theme(axis.title.y = element_blank()) + 
+  theme(axis.ticks = element_blank(), axis.text.y = element_blank()) + 
+  ylab("Percent of Votes Cast") + xlab("") +
+  theme(legend.position="bottom") +
+  ggtitle("                           2016 Presidential Election") +
+  guides(fill = guide_legend(reverse = TRUE)) + labs(fill="")  +  
+  scale_y_continuous(labels = scales::percent) +flip_bar_rb()
+
+
+ggsave(file="D://cces/hispanic/vote16.png", type = "cairo-png", width = 15, height = 10)
+
+
 
 cces16 <- cces16 %>% 
   mutate(vote16 = as.numeric(CC16_410a)) %>% 
@@ -33,26 +81,6 @@ vote16 <- cces16 %>%
   mutate(year = c(2016)) %>% 
   rename(party = vote16)
 
-
-vote$vote16 <- factor(vote$vote16, levels = c("Trump", "Clinton", "Johnson", "Other", "Stein", "McMullin", "Not Vote", "Not Sure"))
-
-
-vote %>% 
-  filter(pct > .0025) %>% 
-  ggplot(., aes(1, pct)) + geom_col(aes(fill= fct_rev(vote16)), colour = "black") + 
-  facet_grid(race2 ~ .)  + 
-  coord_flip() +
-  scale_fill_manual(values=c("darkgrey", "forestgreen", "purple", "goldenrod1", "dodgerblue3", "firebrick1" )) +
-  theme(axis.title.y = element_blank()) + 
-  theme(axis.ticks = element_blank(), axis.text.y = element_blank()) + ylab("Percent of Votes Cast") + 
-  theme(legend.position="bottom") +
-  ggtitle("2016 Presidential Election") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=18, family="KerkisSans")) + 
-  # scale_fill_manual(values=c("darkgrey", "forestgreen", "goldenrod1", "dodgerblue3", "firebrick1")) +  
-  guides(fill = guide_legend(reverse = TRUE)) + labs(fill="")  +  
-  scale_y_continuous(labels = scales::percent)  +  
-  theme(plot.title = element_text(face="bold"))
 
 ggsave(file="D://cces/hispanic/vote16.png", type = "cairo-png", width = 15, height = 6)
 
@@ -125,15 +153,15 @@ voteplot %>%
   scale_fill_manual(values=c("dodgerblue3", "firebrick1", "purple", "goldenrod1", "dodgerblue3", "firebrick1" )) +
   theme(axis.title.y = element_blank()) + 
   # theme(axis.ticks = element_blank(), axis.text.y = element_blank()) + 
-  ylab("Percent of Two Party Vote") + 
-  theme(legend.position="bottom") +
-  ggtitle("Past Three Presidential Election") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=28, family="KerkisSans")) + 
+  ylab("Percent of Two Party Vote") + xlab("") +
+  # theme(legend.position="bottom") +
+  ggtitle("Hispanic Evangelicals Are Less Republican") +
+  # theme(plot.title = element_text(hjust = 0.5)) +
+  # theme(text=element_text(size=28, family="KerkisSans")) + 
   # scale_fill_manual(values=c("darkgrey", "forestgreen", "goldenrod1", "dodgerblue3", "firebrick1")) +  
   guides(fill = guide_legend(reverse = TRUE)) + labs(fill="")  +  
-  scale_y_continuous(labels = scales::percent)  +  
-  theme(plot.title = element_text(face="bold"))
+  scale_y_continuous(labels = scales::percent)  +  flip_bar_rb()
+  # theme(plot.title = element_text(face="bold"))
 
 ggsave(file="D://cces/hispanic/three_elects.png", type = "cairo-png", width = 15, height = 12)
 
@@ -162,19 +190,146 @@ attend <- cces16 %>%
 
 
 attend %>% 
-  # filter(type == "White Mainline") %>% 
+   filter(age2 != "80 and Over") %>% 
   ggplot(., aes(x = mean, y = age2, group = race2, label = race2))  +
   geom_point(shape=21, size =4, aes(fill = factor(race2)), show.legend = TRUE) +  
   geom_errorbarh(aes(xmin = lower, xmax=upper, colour = factor(race2)), height=0, size = 1, show.legend = FALSE) + 
-  # scale_color_manual(values = c("firebrick1", "black","#53B400", "#00C094", "#FB61D7", "#A58AFF", "grey", "red", "green")) +
-  theme(legend.title=element_blank()) +
-  theme(legend.position = "bottom") + 
-  # scale_fill_manual(values = c("firebrick1", "black","#53B400", "#00C094", "#FB61D7", "#A58AFF", "grey")) + 
-  theme(text=element_text(size=42, family="KerkisSans"))   +  
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme(plot.subtitle = element_text(hjust = 0.5)) +
   labs(x = "Religious Attendance", y ="", title = "Comparing Church Attendance", caption = "Data: CCES 2016", subtitle = "95% Confidence Intervals") +
   scale_x_continuous(limits = c(1,6), breaks = c(1,2,3,4,5,6), labels = c("Never", "Seldom", "Yearly", "Monthly", "Weekly", "Weekly+"))  +  
-  theme(plot.title = element_text(face="bold"))  
+  mean_rb()
 
 ggsave(file="D://cces/hispanic/attendance_by_age_ci_facet.png", type = "cairo-png", width = 15, height = 15)
+
+
+
+
+pid7<- cces16 %>% 
+  filter(pew_bornagain ==1 & religpew ==1) %>% 
+  filter(pid7 <8) %>% 
+  group_by(race) %>% 
+  summarise(mean = mean(pid7),
+            sd = sd(pid7), 
+            n = n()) %>% 
+  mutate(se = sd/sqrt(n),
+         lower = mean - qt(1 - (0.05 /2),  n -1) * se,
+         upper = mean + qt(1 - (0.05 /2),  n -1) * se) %>% 
+  ungroup(race) %>% 
+  mutate(race2 = to_factor(race))
+
+
+
+pid7 %>% 
+  # filter(age2 != "80 and Over") %>% 
+  ggplot(., aes(x = mean, y = reorder(race2, -mean), group = race2, label = race2))  +
+  geom_point(shape=21, size =7, aes(fill = factor(race2)), show.legend = TRUE) +  
+  geom_errorbarh(aes(xmin = lower, xmax=upper, colour = factor(race2)), height=0, size = 3, show.legend = FALSE) + 
+  labs(x = "Self Described Party Identification", y ="", title = "Comparing Party ID Among Born Again Protestants", caption = "Data: CCES 2016", subtitle = "95% Confidence Intervals") +
+  scale_x_continuous(limits = c(1,6.5), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Democrat", "Not Strong Democrat", "Lean Democrat", "Independent", "Lean Republican", "Not Strong Republican", "Strong Republican")) +    
+  mean_rb() + theme(legend.position="none")
+
+ggsave(file="D://cces/hispanic/pid_by_race.png", type = "cairo-png", width = 20, height = 15)
+
+cces16 %>% 
+  filter(pew_bornagain ==1 & religpew ==1) %>% 
+  filter(pid7 <8) %>%
+  mutate(pid7 = as.numeric(pid7), race = to_factor(race)) %>% 
+  ggplot(., aes(x = pid7, y = race)) +
+  geom_density_ridges_gradient(aes(fill = ..x..), scale =3, size = .03) +
+  scale_fill_gradientn(colours = c("dodgerblue3", "gray", "firebrick3")) +
+  mean_rb() +
+  scale_x_continuous(limits = c(-.5,9), breaks = c(1,2,3,4,5,6,7), labels = c("Strong Democrat", "Not Strong Democrat", "Lean Democrat", "Independent", "Lean Republican", "Not Strong Republican", "Strong Republican")) +
+  theme(axis.text.x = element_text(family = "IBM Plex Serif", size =16, angle = 45, hjust = 1)) + theme(legend.position="none") +
+  labs(x = "Self Described Party Identification", y ="", title = "Distribution of Party ID", caption = "Data: CCES 2016", subtitle = "Among Born Again Protestants")
+  
+
+
+
+ggsave(file="D://cces/hispanic/ridge.png", type = "cairo-png", width = 20, height = 15)
+
+
+a1 <- cces16 %>% 
+  filter(gender ==1) %>% 
+  filter(CC16_301b <6) %>% 
+  count(CC16_301b, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  mutate(gender = c("Male"))  %>% 
+  mutate(abort = to_factor(CC16_301b))
+
+
+a2 <- cces16 %>% 
+  filter(gender ==2) %>% 
+  filter(CC16_301b <6) %>%
+  count(CC16_301b, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  mutate(gender = c("Female"))  %>% 
+  mutate(abort = to_factor(CC16_301b))
+
+agraph <- bind_rows(a1, a2)
+
+agraph %>% 
+  ggplot(., aes(x=abort, y=pct, group =gender, label = gender, fill= gender)) + geom_col(position = "dodge", color = "black") +bar_rb()  +  
+  scale_y_continuous(labels = scales::percent) +
+  labs(x= "Importance of Abortion", y= "Percent of Sample", title = "How Important is Abortion to You?", caption = "Data: CCES 2016") +
+  # theme(axis.text.x = element_text(family = "IBM Plex Serif", size =16, angle = 45, hjust = 1))
+
+ggsave(file="D://cces/abortion_gender.png", type = "cairo-png", width = 20, height = 15)
+
+
+
+
+a3 <- cces16 %>% 
+  filter(gender ==1) %>% 
+  filter(CC16_301b <6) %>% 
+  filter(CC16_332f ==1) %>% 
+  count(CC16_301b, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  mutate(gender = c("Male"))  %>% 
+  mutate(abort = to_factor(CC16_301b)) %>% 
+  mutate(pos = "Pro-Life")
+
+
+a4 <- cces16 %>% 
+  filter(gender ==2) %>% 
+  filter(CC16_301b <6) %>%
+  filter(CC16_332f ==1) %>% 
+  count(CC16_301b, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  mutate(gender = c("Female"))  %>% 
+  mutate(abort = to_factor(CC16_301b)) %>% 
+  mutate(pos = "Pro-Life")
+
+a5 <- cces16 %>% 
+  filter(gender ==1) %>% 
+  filter(CC16_301b <6) %>% 
+  filter(CC16_332a ==1) %>% 
+  count(CC16_301b, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  mutate(gender = c("Male"))  %>% 
+  mutate(abort = to_factor(CC16_301b)) %>% 
+  mutate(pos = "Pro-Choice")
+
+
+a6 <- cces16 %>% 
+  filter(gender ==2) %>% 
+  filter(CC16_301b <6) %>%
+  filter(CC16_332a ==1) %>% 
+  count(CC16_301b, wt = commonweight_vv) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  mutate(gender = c("Female"))  %>% 
+  mutate(abort = to_factor(CC16_301b)) %>% 
+  mutate(pos = "Pro-Choice")
+
+
+
+agraph <- bind_rows(a3, a4, a5, a6)
+
+agraph %>% 
+  ggplot(., aes(x=abort, y=pct, group =gender, label = gender, fill= gender)) + geom_col(position = "dodge", color = "black") +bar_rb()  +  
+  scale_y_continuous(labels = scales::percent) +
+  labs(x= "Importance of Abortion", y= "Percent of Sample", title = "How Important is Abortion to You?", caption = "Data: CCES 2016") + facet_grid(.~pos)
+  # theme(axis.text.x = element_text(family = "IBM Plex Serif", size =16, angle = 45, hjust = 1))
+  
+  ggsave(file="D://cces/abortion_gender_by_position.png", type = "cairo-png", width = 20, height = 15)
+
+
+
