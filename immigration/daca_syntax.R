@@ -5,7 +5,7 @@ library(janitor)
 library(tidyverse)
 library(extrafont)
 
-daca <- read_csv("https://raw.githubusercontent.com/ryanburge/cces/master/immigration/daca.csv") %>% clean_names()
+daca <- read_csv("https://raw.githubusercontent.com/ryanburge/cces/master/immigration/daca.csv") %>% clean_names() %>% rename(religious_body = `Religious Body`)
 
 ## Simple Word Cloud
 

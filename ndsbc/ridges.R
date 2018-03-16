@@ -54,7 +54,9 @@ rplot %>%
   mean_rb() +
   scale_x_continuous(limits = c(-.5,9), breaks = c(1,2,3,4,5,6), labels = c("Never", "Seldom", "Yearly", "Monthly", "Weekly", "Weekly+")) +
   theme(axis.text.x = element_text(family = "Product Sans", size =16, angle = 45, hjust = 1)) + theme(legend.position="none") +
-  labs(x = "Self Described Church Attendance", y ="", title = "Distribution of Church Attendance", caption = "Data: CCES 2016") +theme(plot.title = element_text(size=64))
+  labs(x = "Self Described Church Attendance", y ="", title = "Distribution of Church Attendance", caption = "Data: CCES 2016") +theme(plot.title = element_text(size=64)) + 
+  theme(axis.text.x = element_text(family = "Product Sans", size =36)) +
+  scale_fill_brewer(palette="Dark2")
 
 ggsave(file="D://cces/ndsbc/ridges2.png", type = "cairo-png", width = 21, height = 15)
 

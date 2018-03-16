@@ -21,7 +21,7 @@ sbcnd %>%
   annotate("text", x = 2015, y = .1375, label = "United Methodist", size = 10, family = "Product Sans") +
   annotate("text", x = 2015, y = .115, label = "Southern Baptist", size = 10, family = "Product Sans") +
   annotate("text", x = 2015, y = .055, label = "ELCA", size = 10, family = "Product Sans") +
-  annotate("text", x = 2015, y = .03, label = "PCUSA", size = 10, family = "Product Sans")
+  annotate("text", x = 2015, y = .03, label = "PCUSA", size = 10, family = "Product Sans") + theme(legend.position="none") 
 
 ggsave(file="D://cces/nd_long.png", type = "cairo-png", width = 21, height = 15)
 
