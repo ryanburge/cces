@@ -6,7 +6,7 @@ library(extrafont)
 cces16 <- read_dta("D:/cces/data/cces.dta")
 cces12 <- read_dta("D:/cces/data/cces12.dta")
 
-cces16 %>% filter(religpew ==1 & race ==1 & pew_bornagain ==1) %>% 
+sav <- cces16 %>% filter(religpew ==1 & race ==1 & pew_bornagain ==1) %>% 
   mutate(attend = 7 - pew_churatd) %>% 
   group_by(educ) %>% 
   count(attend) %>% 
@@ -28,17 +28,17 @@ cces16 %>% filter(religpew ==1 & race ==1 & pew_bornagain ==1) %>%
                               5= 'Bachelors';
                               6= 'Graduate'")) %>% 
   ungroup(educ) %>% 
-  mutate(attend = fct_inorder(attend), ed = fct_inorder(ed)) %>% 
-ggplot(., aes(x=ed, y = weight, fill = attend)) + geom_col(position = "dodge") +  
-  theme(axis.title.y = element_blank()) + 
-  ylab("Percent of Votes Cast") + xlab("Level of Education") +
-  theme(legend.position="bottom") +
+  mutate(attend = fct_inorder(attend), ed = fct_inorder(ed)) 
+
+sav %>% 
+  ggplot(., aes(x=ed, y = weight, fill = attend)) + geom_col(position = "dodge", color = "black") +  
+  labs(y = "Percent", x = "Level of Education") +
+  bar_rb() +
   ggtitle("Educational Level and Church Attendance") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  theme(text=element_text(size=28, family="KerkisSans"))  + 
+  scale_fill_lancet() +
   scale_y_continuous(labels = scales::percent) + theme(legend.title=element_blank()) + labs(caption = "Data from CCES 2016")
 
-ggsave(file="educ_attend_cces.png", type = "cairo-png", width = 20, height =12)
+ggsave(file="educ_attend_cces_new.png", type = "cairo-png", width = 20, height =12)
 
 cces16$attend <- 7 - cces16$pew_churatd
 cces16$age <- 2016- cces16$birthyr
