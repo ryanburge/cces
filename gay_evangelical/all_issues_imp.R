@@ -1,4 +1,19 @@
 cces16 <- cces16 %>% 
+  mutate(gay = recode(sexuality, "2:5=1; else =0")) %>% 
+  mutate(lgbevan = gay + evangelical) %>% 
+  mutate(lgbevan = recode(lgbevan, "2=1; else=0"))
+
+
+
+g1 <- cces16 %>% select(V101, evangelical, gay, lgbevan) %>% 
+  gather(new, x1, evangelical:lgbevan) %>% 
+  filter(x1 ==1) %>% select(V101, new) 
+
+cces16 <- left_join(cces16, g1)
+
+
+
+cces16 <- cces16 %>% 
   mutate(guncontrol = recode(CC16_301a, "1=5; 2=4; 3=3; 4=2; 5=1; else=99")) %>% 
   mutate(abortion = recode(CC16_301b, "1=5; 2=4; 3=3; 4=2; 5=1; else=99")) %>% 
   mutate(taxes = recode(CC16_301c, "1=5; 2=4; 3=3; 4=2; 5=1; else=99")) %>% 
@@ -205,15 +220,26 @@ a13 <- cces16 %>%
 
 
 total <-  bind_rows(a1, a2, a3,  a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) %>% 
-          mutate(group = recode(new, "'evangelical' = 'Evangelical'; 'evanlgbt' = 'Evangelical + LGBT'; 'lgbt' = 'LGBT'")) %>% 
+          mutate(group = recode(new, "'evangelical' = 'Evangelical'; 'lgbevan' = 'Evangelical + LGB'; 'gay' = 'LGB'")) %>% 
           select(-new) %>% 
           mutate(issue = as.factor(issue))
 
 
 total %>% 
-  # filter(group ==  "Evangelical + LGBT") %>% 
-  ggplot(., aes(x=mean, y= fct_reorder(issue, mean), group = group, color = group)) +
-  geom_point() +
-  geom_errorbarh(aes(xmin = lower, xmax=upper)) 
-  
+  ggplot(., aes(y=mean, x= fct_reorder(issue, mean), color = group)) +
+  geom_point(position=position_dodge(width=0.75), size =4) +
+  geom_errorbar(aes(ymin = lower, ymax=upper), position=position_dodge(0.75), size = 1) +
+  coord_flip() +
+  mean_rb() +
+  labs(title = "Issue Importance", x = "Issue Area", y = "Level of Importance") +
+  scale_y_continuous(limits = c(2.5,5.25), breaks = c(1,2,3,4,5), labels = c("No Importance", "Very Low", "Somewhat Low", "Somewhat High", "Very High")) +
+  scale_color_npg()
+
+ggsave(file="D://cces/gay_evangelical/issue_importance.png", type = "cairo-png", width = 20, height =12, dpi = 100)
+
+
+
+
+
+
 

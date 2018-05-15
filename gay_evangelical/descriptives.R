@@ -1,9 +1,10 @@
 cces16 <- cces16 %>% 
-  mutate(lgb = recode(sexuality, "2:5=1; else=0"), tt = recode(trans, "1=1; else=0"), lgbt = lgb + tt, lgbt = recode(lgbt, "1:2=1; else=0")) %>% 
-  mutate(evanlgbt = lgbt + sexuality, evanlgbt = recode(evanlgbt, "2=1; else =0")) 
+  mutate(lgb = recode(sexuality, "2:5=1; else=0")) %>% 
+  mutate(evanlgb = lgb + evangelical) %>% 
+  mutate(evanlgb = recode(evanlgb, "2=1; else =0"))
 
-g1 <- cces16 %>% select(V101, evangelical, lgbt, evanlgbt) %>% 
-  gather(new, x1, evangelical:evanlgbt) %>% 
+g1 <- cces16 %>% select(V101, evangelical, lgb, evanlgb) %>% 
+  gather(new, x1, evangelical:evanlgb) %>% 
   filter(x1 ==1) %>% select(V101, new)
 
 
@@ -26,7 +27,7 @@ race <- cces16 %>%
   count(race, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n)) %>% 
   mutate(race = to_factor(race)) %>% 
-  filter(pct > .05)
+  filter(pct > .035)
 
 cces16 %>% 
   filter(new != "NA") %>% 
@@ -52,12 +53,22 @@ cces16 %>%
   count(gender, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
 
+cces16 %>% 
+  filter(new != "NA") %>% 
+  group_by(new) %>% 
+  count(marstat, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n)) %>% 
+  mutate(race = to_factor(marstat)) %>% 
+  filter(pct > .035)
+
+
+
 cces16 <- cces16 %>% 
   mutate(attend = recode(pew_churatd, "1=6; 2=5; 3=4; 4=3; 5=2; 6=1; else =99"))
 
 cces16 %>% 
   filter(attend !=99) %>% 
-  # group_by(new) %>% 
+   group_by(new) %>% 
   summarise(mean = mean(attend), 
                         sd = sd(attend), 
                         n = n()) %>% 
@@ -78,38 +89,38 @@ cces16 %>% filter(evangelical ==1) %>%
   count(CC16_410a, wt = commonweight_vv_post) %>% 
   mutate(pct = prop.table(n))
 
-cces16 %>% filter(evanlgbt ==1) %>% 
+cces16 %>% filter(evanlgb ==1) %>% 
   filter(attend == 5| attend ==6) %>% 
   filter(CC16_410a < 10) %>% 
   count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
 
-cces16 %>% filter(evanlgbt ==1) %>% 
+cces16 %>% filter(evanlgb ==1) %>% 
   filter(attend < 5) %>% 
   filter(CC16_410a < 10) %>% 
   count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
 
-cces16 %>% filter(evanlgbt ==1) %>% 
+cces16 %>% filter(evanlgb ==1) %>% 
   filter(attend == 5| attend ==6) %>% 
   filter(CC16_410a < 10) %>% 
   count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
 
 
-cces16 %>% filter(evanlgbt ==1) %>% 
+cces16 %>% filter(evanlgb ==1) %>% 
   filter(relimp1 == 3| relimp1 ==4) %>% 
   filter(CC16_410a < 10) %>% 
   count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
 
-cces16 %>% filter(evanlgbt ==1) %>% 
+cces16 %>% filter(evanlgb ==1) %>% 
   filter(relimp1 == 1| relimp1 ==2) %>% 
   filter(CC16_410a < 10) %>% 
   count(CC16_410a, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
 
-cces16 %>% filter(evanlgbt ==1) %>% 
+cces16 %>% filter(evanlgb ==1) %>% 
   # filter(relimp1 == 3| relimp1 ==4) %>% 
   # filter(CC16_410a < 10) %>% 
   count(relimp1, wt = commonweight_vv_lgbt) %>% 
