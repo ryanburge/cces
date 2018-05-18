@@ -110,3 +110,122 @@ cces16 <- cces16 %>%
 cces16 <- cces16 %>% 
   mutate(evangelical = evanbap + evanmeth + evannd + evanluth + evanpres + evanpent + evancong + evanholy) %>% 
   mutate(evangelical = recode(evangelical, "1:4=1; else=0"))
+
+## Making Mainline
+
+cces16 <- cces16 %>% 
+  mutate(abc = recode(cces16$religpew_baptist, "2=1; 4=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(epis = recode(cces16$religpew_episcop, "1:90=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(luth = recode(cces16$religpew_lutheran, "1=1; 4=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(meth = recode(cces16$religpew_methodist, "1=1; 90=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(pres = recode(cces16$religpew_presby, "1=1; 90=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(cong = recode(cces16$religpew_congreg, "1=1; 3=1; 90=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(doc = recode(cces16$religpew_protestant, "8=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(reform = recode(cces16$religpew_protestant, "11=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(mainline = abc + epis + luth + meth + pres + cong + doc + reform) %>% 
+  mutate(mainline = recode(mainline, "1:5=1; else=0"))
+
+## Black Protestant 
+
+cces16 <- cces16 %>% 
+  mutate(black = recode(race, "2=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(meth = recode(cces16$religpew_methodist, "3:4=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(sbc = recode(cces16$religpew_baptist, "1=1; else=0")) %>% 
+  mutate(sbc = black + sbc) %>% 
+  mutate(sbc = recode(sbc, "2=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(nbap = recode(cces16$religpew_baptist, "3=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(abc = recode(cces16$religpew_baptist, "2=1; else=0")) %>% 
+  mutate(abc = black + abc) %>% 
+  mutate(abc = recode(abc, "2=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(miss = recode(cces16$religpew_baptist, "7=1; else=0")) %>% 
+  mutate(miss = black + miss) %>% 
+  mutate(miss = recode(miss, "2=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(obap = recode(cces16$religpew_baptist, "90=1; else=0")) %>% 
+  mutate(obap = black + obap) %>% 
+  mutate(obap = recode(obap, "2=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(ometh = recode(cces16$religpew_methodist, "90=1; else=0")) %>% 
+  mutate(ometh = black + ometh) %>% 
+  mutate(ometh = recode(ometh, "2=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(apos = recode(cces16$religpew_pentecost, "6=1; 7=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(open = recode(cces16$religpew_pentecost, "90=1; else=0")) %>% 
+  mutate(open = black + open) %>% 
+  mutate(open = recode(open, "2=1; else=0"))
+
+cces16 <- cces16 %>%
+  mutate(holy = recode(cces16$religpew_holiness, "90=1; else=0")) %>% 
+  mutate(holy = black + holy) %>% 
+  mutate(holy = recode(holy, "2=1; else=0"))
+
+
+cces16 <- cces16 %>% 
+  mutate(bprot = meth + sbc + nbap + abc + miss + obap + ometh + apos + open + holy) %>% 
+  mutate(bprot = recode(bprot, "1:2=1; else=0"))
+
+## Everything Else
+
+cces16 <- cces16 %>% 
+  mutate(catholic = recode(religpew, "2=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(jewish = recode(religpew, "5=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(other = recode(religpew, "3=1; 6:8=1; 12=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(none = recode(religpew, "9:11=1; else=0"))
+
+cces16 <- cces16 %>% 
+  mutate(lgb = recode(sexuality, "2:5=1; else=0")) %>% 
+  mutate(evanlgb = lgb + evangelical) %>% 
+  mutate(evanlgb = recode(evanlgb, "2=1; else =0"))
+
+
+lgb <- cces16 %>% 
+  filter(sexuality == 2 | sexuality ==3 | sexuality ==4 | sexuality ==5) %>% 
+  mutate(new = "LGB") 
+
+evanlgb <- cces16 %>% 
+  filter(evangelical == 1) %>% 
+  filter(sexuality == 2 | sexuality ==3 | sexuality ==4 | sexuality ==5) %>% 
+  mutate(new = "LGB + Evangelical") 
+
+evan <- cces16 %>% 
+  filter(evangelical == 1) %>% 
+  mutate(new = "Evangelical") 
+
+cces16 <- bind_rows(lgb, evanlgb, evan)

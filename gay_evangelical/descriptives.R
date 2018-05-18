@@ -1,18 +1,9 @@
-cces16 <- cces16 %>% 
-  mutate(lgb = recode(sexuality, "2:5=1; else=0")) %>% 
-  mutate(evanlgb = lgb + evangelical) %>% 
-  mutate(evanlgb = recode(evanlgb, "2=1; else =0"))
 
-g1 <- cces16 %>% select(V101, evangelical, lgb, evanlgb) %>% 
-  gather(new, x1, evangelical:evanlgb) %>% 
-  filter(x1 ==1) %>% select(V101, new)
-
-
-cces16 <- cces16 %>% left_join(g1)
+## Making Table 1 #####
 
 ed <- cces16 %>% 
-  filter(new != "NA") %>% 
-  group_by(new) %>% 
+  filter(evangelical ==1 | evanlgb ==1 | lgb ==1) %>% 
+  group_by(lgb, evanlgb, evangelical) %>%  
   summarise(mean = mean(educ), 
             sd = sd(educ), 
             n = n()) %>% 
@@ -22,17 +13,17 @@ ed <- cces16 %>%
 
 
 race <- cces16 %>% 
-  filter(new != "NA") %>% 
-  group_by(new) %>% 
+  filter(evangelical ==1 | evanlgb ==1 | lgb ==1) %>% 
+  group_by(lgb, evanlgb, evangelical) %>% 
   count(race, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n)) %>% 
   mutate(race = to_factor(race)) %>% 
   filter(pct > .035)
 
 cces16 %>% 
-  filter(new != "NA") %>% 
   mutate(age = 2017 - birthyr) %>% 
-  group_by(new) %>% 
+  filter(evangelical ==1 | evanlgb ==1 | lgb ==1) %>% 
+  group_by(lgb, evanlgb, evangelical) %>% 
   summarise(mean = mean(age), 
             sd = sd(age), 
             n = n()) %>% 
@@ -41,21 +32,21 @@ cces16 %>%
          upper = mean + qt(1 - (0.05 /2),  n -1) * se) 
 
 cces16 %>% 
-  filter(new != "NA") %>% 
   filter(faminc < 17) %>% 
-  group_by(new) %>% 
+  filter(evangelical ==1 | evanlgb ==1 | lgb ==1) %>% 
+  group_by(lgb, evanlgb, evangelical) %>% 
   summarise(mean = mean(faminc))
 
 
 cces16 %>% 
-  filter(new != "NA") %>% 
-  group_by(new) %>% 
+  filter(evangelical ==1 | evanlgb ==1 | lgb ==1) %>%
+  group_by(lgb, evanlgb, evangelical) %>% 
   count(gender, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
 
 cces16 %>% 
-  filter(new != "NA") %>% 
-  group_by(new) %>% 
+  filter(evangelical ==1 | evanlgb ==1 | lgb ==1) %>%
+  group_by(lgb, evanlgb, evangelical) %>% 
   count(marstat, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n)) %>% 
   mutate(race = to_factor(marstat)) %>% 
@@ -68,7 +59,8 @@ cces16 <- cces16 %>%
 
 cces16 %>% 
   filter(attend !=99) %>% 
-   group_by(new) %>% 
+  filter(evangelical ==1 | evanlgb ==1 | lgb ==1) %>%
+   group_by(lgb, evanlgb, evangelical) %>% 
   summarise(mean = mean(attend), 
                         sd = sd(attend), 
                         n = n()) %>% 
