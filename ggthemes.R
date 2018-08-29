@@ -94,6 +94,8 @@ mean_rb <- function(base_size = 25, base_family = "Product Sans")
        panel.background = element_rect(fill = "white"), 
        panel.grid.major.x =  element_line(colour = "gray48", size = .25), 
        panel.grid.minor.x =  element_line(colour = "gray48", size = .25, linetype = "dashed"),
+       panel.grid.major.y =  element_line(colour = "gray48", size = .25), 
+       panel.grid.minor.y =  element_line(colour = "gray48", size = .25, linetype = "dashed"),
        text = element_text(base_family, size = 28),
        plot.title = element_text(family = "Product Sans", size = 64, vjust =2, face = "bold"),
        plot.subtitle = element_text(family = "Product Sans", size = 20, vjust =-1),
@@ -105,3 +107,4 @@ mean_rb <- function(base_size = 25, base_family = "Product Sans")
 )
   
 }
+
