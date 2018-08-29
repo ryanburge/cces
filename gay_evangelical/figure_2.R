@@ -66,10 +66,10 @@ Palette <- c("gray48", "black", "gray87")
 
 pid7 <- pid7 %>% mutate(pct = round(pct,3))
 
-cces16 %>% 
-  group_by(new) %>% 
-  filter(pid7 !=8) %>%
-  summarise(mean = mean(pid7))
+# cces16 %>% 
+#   group_by(new) %>% 
+#   filter(pid7 !=8) %>%
+#   summarise(mean = mean(pid7))
 
 
 pid7 %>% 
@@ -81,6 +81,6 @@ pid7 %>%
   guides(fill = guide_legend(reverse=FALSE)) +
   scale_fill_manual(values = Palette) +
   geom_text(aes(y = pct + .015, label = paste0(pct*100, '%')), position = position_dodge(width = .9), size = 6, family = "IBM Plex Serif") +
-  labs(x= "Party Identification", y = "Percent of Each Sample", title = "The Political Partisanship of LGBT Evangelicals", caption = "Data: CCES 2016", subtitle = "Mean Party Identification: Evangelical = 4.52, LGB = 2.64, LGB Evangelical = 3.25")+ theme_rb()
+  labs(x= "Party Identification", y = "Percent of Each Sample", title = "The Political Partisanship of LGB Evangelicals", caption = "Data: CCES 2016", subtitle = "Mean Party Identification: Evangelical = 4.52, LGB = 2.64, LGB Evangelical = 3.25")+ theme_rb()
 
 ggsave(file="D://cces/gay_evangelical/pid7_2016_new.png", type = "cairo-png", width = 20, height =12)

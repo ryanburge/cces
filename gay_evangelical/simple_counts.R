@@ -19,3 +19,9 @@ cces16 %>%
   filter(lgb ==1) %>% 
   count(evangelical, wt = commonweight_vv_lgbt) %>% 
   mutate(pct = prop.table(n))
+
+cces16 %>% 
+  filter(sexuality < 6) %>% 
+  group_by(evangelical) %>% 
+  count(sexuality, wt = commonweight_vv_lgbt) %>% 
+  mutate(pct = prop.table(n)) 
